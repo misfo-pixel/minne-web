@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="sky" cx="0.42" cy="0.38" r="0.75">
+      <stop offset="0" stop-color="#FFE38A"/>
+      <stop offset="1" stop-color="#FFC92E"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#sky)"/>
+
+  <!-- 闪光 -->
+  <path d="M800 170 l16 42 42 16 -42 16 -16 42 -16 -42 -42 -16 42 -16z" fill="#fff" stroke="#22141a" stroke-width="9" stroke-linejoin="round"/>
+  <path d="M900 300 l8 20 20 8 -20 8 -8 20 -8 -20 -20 -8 20 -8z" fill="#7A0019"/>
+
+  <g transform="translate(512 520) scale(1.15) translate(-495 -500)">
+  <g stroke="#22141a" stroke-width="12" stroke-linejoin="round" stroke-linecap="round">
+    <!-- 身体 -->
+    <path d="M300 660 C300 540 420 492 570 500 C700 507 810 540 880 600 C850 625 830 690 730 720 L330 720 C310 705 300 685 300 660 Z" fill="#22141a"/>
+    <!-- 嘴 -->
+    <path d="M262 418 C208 424 160 438 118 458 C168 470 220 470 268 458 Z" fill="#6b6370"/>
+    <!-- 头 -->
+    <circle cx="420" cy="420" r="168" fill="#22141a"/>
+  </g>
+
+  <!-- 背上白点 -->
+  <g fill="#fff">
+    <circle cx="610" cy="565" r="17"/><circle cx="670" cy="572" r="17"/><circle cx="730" cy="585" r="16"/><circle cx="785" cy="603" r="14"/>
+    <circle cx="640" cy="625" r="17"/><circle cx="700" cy="635" r="16"/><circle cx="756" cy="650" r="14"/>
+  </g>
+
+  <!-- 头顶高光 -->
+  <path d="M478 282 C520 300 552 336 566 380" fill="none" stroke="#4d3d46" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- 眼睛 -->
+  <circle cx="362" cy="398" r="46" fill="#e0262f" stroke="#fff" stroke-width="7"/>
+  <circle cx="366" cy="402" r="22" fill="#22141a"/>
+  <circle cx="350" cy="384" r="11" fill="#fff"/>
+  <circle cx="378" cy="418" r="5" fill="#fff"/>
+
+  <!-- 腮红 -->
+  <ellipse cx="438" cy="478" rx="36" ry="21" fill="#ff8fa3" opacity=".9"/>
+
+  </g>
+
+  <!-- 水面 -->
+  <path d="M0 752 C110 712 210 792 330 752 C450 712 550 792 670 752 C790 712 890 792 1024 752 L1024 1024 L0 1024 Z" fill="#7A0019" stroke="#22141a" stroke-width="12" stroke-linejoin="round"/>
+  <g fill="none" stroke="#FFCC33" stroke-width="16" stroke-linecap="round">
+    <path d="M230 852 C280 832 330 872 380 852"/>
+    <path d="M600 872 C650 852 700 892 750 872"/>
+    <path d="M420 942 C460 926 500 958 540 942"/>
+  </g>
+</svg>
