@@ -49,7 +49,7 @@ const ZH: Copy = {
   ],
   howTitle: '开一场团，五步',
   steps: [
-    { title: '上架商品', text: '在「我的小店」点「商品管理」→「添加商品」，只有名称和价格是必填。卖完了关掉开关就行。', img: 's06-menu.jpg' },
+    { title: '上架商品', text: '在「我的小店」点「商品管理」→「添加商品」，只有名称和价格是必填。菜单长的话点「从网页导入菜单」，在 minnepal.com/import 贴菜单链接、文字或照片，回小程序核对后一次上架。卖完了关掉开关就行。', img: 's06-menu.jpg' },
     { title: '在日历上点一天', text: '「我的小店」有一个两周的日历，点哪天就在哪天开团。小灰点是别家的团，错开同类的店更容易成团。', img: 's05-dash.jpg' },
     { title: '设门槛和取货点', text: '填出发时间、截单时间、成团门槛，勾选这一场去哪几个取货点，点「开团」。', img: 's07-session.jpg' },
     { title: '一键出海报', text: '在场次卡片上点「海报」。杂志、黑板、手账三种版式随时切换，保存后发朋友圈、发群。', img: 'styles.jpg' },
@@ -59,6 +59,7 @@ const ZH: Copy = {
   faq: [
     { q: '要交钱吗？', a: '不用。明尼助手不经手任何资金，也不从你的单里抽成。' },
     { q: '买家怎么付款？', a: '成团后你用邮件联系买家收款，金额以小程序里的订单为准。买家的邮箱都是验证过的学校邮箱。' },
+    { q: '菜单很长，要一样样录吗？', a: '不用。在「商品管理」点「从网页导入菜单」拿导入码，用浏览器打开 minnepal.com/import，贴菜单链接、文字或照片，整理好回小程序核对，一次上架。' },
     { q: '没凑够单怎么办？', a: '截单时没到门槛，这场团和订单自动取消，系统会通知买家。不想等，也可以点「照常送」。' },
     { q: '卖食品有什么要求？', a: '如果你销售食品，需要自己符合当地的相关规定。开店前，小程序里会请你阅读并确认《商家责任告知书》。' },
     { q: '怎么开店？', a: `发邮件到 ${EMAIL}，备注「开店」，我们把开店码发给你。开店码 7 天内有效，一码一店。` }
@@ -88,7 +89,7 @@ const EN: Copy = {
   ],
   howTitle: 'Open a session in five steps',
   steps: [
-    { title: 'List your products', text: 'In My Shop, tap Manage Products → Add Product. Only name and price are required. Sold out? Just switch it off.', img: 's06-menu.jpg' },
+    { title: 'List your products', text: 'In My Shop, tap Manage Products → Add Product. Only name and price are required. Long menu? Tap Import a menu from the web and paste your menu link, text or photos at minnepal.com/import, then review and list everything at once. Sold out? Just switch it off.', img: 's06-menu.jpg' },
     { title: 'Pick a day on the calendar', text: 'My Shop has a two-week calendar. Gray dots are other shops\' sessions; avoid days when similar shops are running.', img: 's05-dash.jpg' },
     { title: 'Set the minimum and pickup points', text: 'Set the departure time, cutoff and minimum, tick the pickup points for this session, then tap Open Session.', img: 's07-session.jpg' },
     { title: 'Make a poster', text: 'Tap Poster on the session card. Switch between Magazine, Chalkboard and Scrapbook, then save and share.', img: 'styles.jpg' },
@@ -98,6 +99,7 @@ const EN: Copy = {
   faq: [
     { q: 'Does it cost anything?', a: 'No. 明尼助手 never handles money and takes no commission on your orders.' },
     { q: 'How do buyers pay?', a: 'Once a session fills, you email buyers to collect payment; the amount is whatever their order shows in the mini program. Every buyer\'s email is a verified school address.' },
+    { q: 'Do I have to add my menu item by item?', a: 'No. In Manage Products, tap Import a menu from the web to get an import code, open minnepal.com/import in a browser and paste your menu link, text or photos. Then review the items in the mini program and list them all at once.' },
     { q: 'What if it doesn\'t fill?', a: 'If the minimum isn\'t met by the cutoff, the session and its orders are cancelled and buyers are notified. Don\'t want to wait? Tap Go Anyway.' },
     { q: 'Is the app in English?', a: 'Yes. Go to Me → 语言 / Language and choose English.' },
     { q: 'Selling food?', a: 'If you sell food, you are responsible for following local rules. Before opening your shop, the mini program asks you to read and confirm the seller responsibility notice.' },
