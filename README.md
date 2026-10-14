@@ -26,7 +26,7 @@
    curl -H "x-web-key: 你的密钥" "https://你的地址/webfeed?action=home"
    ```
    返回 `{"success":true,...}` 就通了
-4. **部署网站**：把本仓库推到 GitHub，在 Vercel 导入，环境变量按 `.env.example` 填三项，部署
+4. **部署网站**：把本仓库推到 GitHub，在 Vercel 导入，环境变量按 `.env.example` 填（`SITE_URL` 没有自己的域名时可以不填），部署
 5. 想要自己的域名：Vercel 项目 → Domains 里加，按提示改 DNS。海外服务器不需要备案
 
 ## 改东西去哪改

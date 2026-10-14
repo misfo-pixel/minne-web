@@ -3,8 +3,12 @@ import SiteFooter from '@/components/SiteFooter'
 import SiteHeader from '@/components/SiteHeader'
 import './globals.css'
 
+// 分享卡片里的绝对链接。绑了自己的域名就配 SITE_URL；没配时用 Vercel 自动给的正式域名
+const SITE_URL = process.env.SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000')
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.SITE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(SITE_URL),
   title: { default: '明尼助手 · 明尼生活，一站搞定', template: '%s · 明尼助手' },
   description: '明大中国同学的生活小程序：二手市场、公寓转租、任务委托、兴趣群组、一起拼团。',
   openGraph: { siteName: '明尼助手', locale: 'zh_CN', type: 'website' }
