@@ -89,7 +89,7 @@ const EN: Copy = {
   ],
   howTitle: 'Open a session in five steps',
   steps: [
-    { title: 'List your products', text: 'In My Shop, tap Manage Products → Add Product. Only name and price are required. Long menu? Tap Import a menu from the web and paste your menu link, text or photos at minnepal.com/import, then review and list everything at once. Sold out? Just switch it off.', img: 's06-menu.jpg' },
+    { title: 'List your products', text: 'In My Shop, tap Manage Products → Add Product. Only name and price are required. Long menu? Tap Import a menu from the web and paste your menu link, text or photos at minnepal.com/en/import, then review and list everything at once. Sold out? Just switch it off.', img: 's06-menu.jpg' },
     { title: 'Pick a day on the calendar', text: 'My Shop has a two-week calendar. Gray dots are other shops\' sessions; avoid days when similar shops are running.', img: 's05-dash.jpg' },
     { title: 'Set the minimum and pickup points', text: 'Set the departure time, cutoff and minimum, tick the pickup points for this session, then tap Open Session.', img: 's07-session.jpg' },
     { title: 'Make a poster', text: 'Tap Poster on the session card. Switch between Magazine, Chalkboard and Scrapbook, then save and share.', img: 'styles.jpg' },
@@ -99,7 +99,7 @@ const EN: Copy = {
   faq: [
     { q: 'Does it cost anything?', a: 'No. 明尼助手 never handles money and takes no commission on your orders.' },
     { q: 'How do buyers pay?', a: 'Once a session fills, you email buyers to collect payment; the amount is whatever their order shows in the mini program. Every buyer\'s email is a verified school address.' },
-    { q: 'Do I have to add my menu item by item?', a: 'No. In Manage Products, tap Import a menu from the web to get an import code, open minnepal.com/import in a browser and paste your menu link, text or photos. Then review the items in the mini program and list them all at once.' },
+    { q: 'Do I have to add my menu item by item?', a: 'No. In Manage Products, tap Import a menu from the web to get an import code, open minnepal.com/en/import in a browser and paste your menu link, text or photos. Then review the items in the mini program and list them all at once.' },
     { q: 'What if it doesn\'t fill?', a: 'If the minimum isn\'t met by the cutoff, the session and its orders are cancelled and buyers are notified. Don\'t want to wait? Tap Go Anyway.' },
     { q: 'Is the app in English?', a: 'Yes. Go to Me → 语言 / Language and choose English.' },
     { q: 'Selling food?', a: 'If you sell food, you are responsible for following local rules. Before opening your shop, the mini program asks you to read and confirm the seller responsibility notice.' },
