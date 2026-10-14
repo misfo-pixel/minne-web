@@ -413,3 +413,50 @@ a.session-card:hover { box-shadow: 0 6px 20px rgba(122, 0, 25, .1); }
 .m-end-code { text-align: center; }
 .m-end-code img { background: #fff; border-radius: 14px; border: 2px solid var(--ink); }
 .m-end-code p { margin-top: 8px; font-size: 13px; color: #5a4626; }
+
+/* ==================== 导入菜单 ==================== */
+.importer { max-width: 760px; }
+.imp-card { padding: 24px 20px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; }
+.imp-title { font-size: 20px; color: var(--ink); }
+.imp-card > .muted { margin-top: 4px; font-size: 14px; }
+.imp-code-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.imp-code {
+  flex: 1; min-width: 200px; padding: 10px 16px; font: 800 30px/1.2 Menlo, monospace; letter-spacing: .25em; text-transform: uppercase;
+  color: var(--maroon); border: 2px solid var(--ink); border-radius: 12px; outline: none;
+}
+.imp-code:focus { box-shadow: 3px 3px 0 var(--ink); }
+.imp-tabs { margin: 16px 0 14px; }
+.kind-switch button { padding: 6px 16px; border: 0; border-radius: 999px; background: none; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; }
+.kind-switch button.on { background: var(--card); color: var(--maroon); box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+.imp-input { width: 100%; padding: 12px 14px; font: inherit; border: 1px solid var(--line); border-radius: 12px; outline: none; background: #fff; }
+.imp-input:focus { border-color: var(--maroon); }
+.imp-text { min-height: 220px; resize: vertical; }
+.imp-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.imp-photo { position: relative; aspect-ratio: 3 / 4; border-radius: 12px; overflow: hidden; background: #f5f0ea; }
+.imp-photo img { width: 100%; height: 100%; object-fit: cover; }
+.imp-photo button { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border: 0; border-radius: 50%; background: rgba(34, 20, 26, .7); color: #fff; font-size: 18px; cursor: pointer; }
+.imp-photo-add { display: flex; align-items: center; justify-content: center; border: 2px dashed #d9cfc7; color: var(--muted); font-weight: 600; cursor: pointer; }
+.imp-photo-add input { display: none; }
+.imp-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 18px; }
+.imp-left { font-size: 13px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.imp-review-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.imp-table { margin-top: 14px; border-top: 1px solid var(--line); }
+.imp-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.imp-row input[type=checkbox] { margin-top: 10px; width: 18px; height: 18px; accent-color: var(--maroon); flex: none; }
+.imp-row-off { opacity: .5; }
+.imp-row-main { flex: 1; min-width: 0; }
+.imp-cell { width: 100%; padding: 6px 8px; font: inherit; border: 1px solid transparent; border-radius: 8px; background: none; }
+.imp-cell:hover:not(:disabled), .imp-cell:focus { border-color: var(--line); background: #fff; outline: none; }
+.imp-name { font-weight: 600; }
+.imp-row-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0 8px; }
+.imp-desc { font-size: 12px; color: var(--muted); }
+.imp-bad { font-size: 12px; color: var(--price); }
+.imp-price { flex: none; display: flex; align-items: center; gap: 2px; width: 96px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; font-weight: 700; color: var(--price); }
+.imp-price input { width: 100%; border: 0; outline: none; font: inherit; color: inherit; background: none; }
+.imp-price-missing { border-color: var(--price); background: #fdf1f2; }
+.imp-sticky { position: sticky; bottom: 0; margin: 0 -20px -24px; padding: 14px 20px; background: linear-gradient(transparent, var(--card) 30%); }
+.imp-done { text-align: center; }
+.imp-done-mark { width: 64px; height: 64px; margin: 0 auto 12px; line-height: 60px; font-size: 34px; color: var(--ink); background: var(--gold); border: 2.5px solid var(--ink); border-radius: 50%; box-shadow: 3px 3px 0 var(--ink); }
+.imp-done p { margin-top: 8px; color: var(--muted); }
+.imp-error { margin-top: 14px; padding: 10px 14px; color: var(--price); background: #fdf1f2; border-radius: 10px; font-size: 14px; }
