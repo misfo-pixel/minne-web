@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { existsSync } from 'node:fs'
+import path from 'node:path'
 import type { ReactNode } from 'react'
 
 // 商家入驻宣传页，中英两版共用一个模板。文案来自仓库外的 merchant-guide/guide.html 和 guide-en.html，
@@ -6,6 +8,15 @@ import type { ReactNode } from 'react'
 // 对外一律说「入驻商家」，不说「合作商家」——《商家责任告知书》写明商家不是平台的合作方。
 
 const EMAIL = 'yang9926@umn.edu'
+
+// 推荐取货点。和小程序开店向导预填的两个点一致（campus-helper miniprogram/utils/shopForm.js），改名字两边一起改。
+// 地图用 Google 地图按地址嵌入，不用 API key。照片放 public/merchants/points/<photo>，文件在就显示，没有就只显示地图
+type Point = { name: string; address: string; photo: string }
+const POINTS: Point[] = [
+  { name: 'Fresh Thyme 30th Ave', address: 'Fresh Thyme Market, 24 30th Ave SE, Minneapolis, MN 55414', photo: 'freshthyme.jpg' },
+  { name: 'Macalester College', address: 'Macalester College, 1600 Grand Ave, St Paul, MN 55105', photo: 'macalester.jpg' }
+]
+const hasPhoto = (file: string) => existsSync(path.join(process.cwd(), 'public', 'merchants', 'points', file))
 
 type Copy = {
   lang: 'zh' | 'en'
@@ -20,6 +31,10 @@ type Copy = {
   badges: string[]
   whyTitle: string
   why: { title: string; text: string }[]
+  pointsTitle: string
+  pointsSub: string
+  pointText: string[]
+  mapLink: string
   howTitle: string
   steps: { title: string; text: string; img: string }[]
   faqTitle: string
@@ -48,6 +63,13 @@ const ZH: Copy = {
     { title: '钱的事，你和买家自己定', text: '明尼助手只帮你记下谁要了什么，不经手任何资金，也不从你的单里抽成。' },
     { title: '一键出海报', text: '开团后点一下，生成列出商品、取货点和截单时间的长图海报，底部带小程序码。发朋友圈、发群，买家长按识别就能下单。' }
   ],
+  pointsTitle: '推荐取货点',
+  pointsSub: '开店时这两个点已经帮你填好，可以改、删，也可以再加自己的点。UMN 校区的点各家出发地不同，开店时自己加上。',
+  pointText: [
+    'UMN 东边 Prospect Park，University Ave 和 30th Ave 路口。学生常来买菜，名字好记，门口好找。',
+    '在 St Paul。学校不大，约在校区就能找到人。比 Fresh Thyme 远，路上大约多 25 分钟。'
+  ],
+  mapLink: '在 Google 地图打开',
   howTitle: '开一场团，五步',
   steps: [
     { title: '上架商品', text: '在「我的小店」点「商品管理」→「添加商品」，只有名称和价格是必填。菜单长的话点「从网页导入菜单」，在 minnepal.com/import 贴菜单链接、文字或照片，回小程序核对后一次上架。卖完了关掉开关就行。', img: 's06-menu.jpg' },
@@ -89,6 +111,13 @@ const EN: Copy = {
     { title: 'Money is between you and your buyers', text: '明尼助手 only records who ordered what. We never handle any money and take no commission.' },
     { title: 'One-tap posters', text: 'One tap turns a session into a long poster with your products, pickup points, cutoff time and a mini program code. Share it; buyers long-press the code to order.' }
   ],
+  pointsTitle: 'Suggested pickup points',
+  pointsSub: 'These two are filled in for you when you open a shop. Edit or remove them, or add your own. Add UMN campus points yourself, since every shop starts from a different place.',
+  pointText: [
+    'East of UMN in Prospect Park, at University Ave and 30th Ave. Students shop here all the time, so it\'s easy to name and easy to find.',
+    'In St Paul. The campus is small, so meeting on campus works. Farther than Fresh Thyme, about 25 more minutes on the road.'
+  ],
+  mapLink: 'Open in Google Maps',
   howTitle: 'Open a session in five steps',
   steps: [
     { title: 'List your products', text: 'In My Shop, tap Manage Products → Add Product. Only name and price are required. Long menu? Tap Import a menu from the web and paste your menu link, text or photos at minnepal.com/en/import, then review and list everything at once. Sold out? Just switch it off.', img: 's06-menu.jpg' },
@@ -170,6 +199,31 @@ export default function MerchantPage({ lang }: { lang: 'zh' | 'en' }) {
             </li>
           ))}
         </ol>
+      </section>
+
+      <section className="wrap m-section">
+        <h2 className="display-title">{c.pointsTitle}</h2>
+        <p className="points-sub">{c.pointsSub}</p>
+        <div className="points">
+          {POINTS.map((pt, i) => (
+            <div key={pt.name} className="point">
+              {hasPhoto(pt.photo) && <img className="point-photo" src={`/merchants/points/${pt.photo}`} alt={pt.name} loading="lazy" />}
+              <iframe
+                className="point-map"
+                title={pt.name}
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(pt.address)}&z=15&output=embed`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+              <div className="point-body">
+                <h3>{pt.name}</h3>
+                <p className="point-addr">{pt.address.split(', ').slice(1).join(', ')}</p>
+                <p>{c.pointText[i]}</p>
+                <a className="point-link" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pt.address)}`} target="_blank" rel="noopener noreferrer">{c.mapLink} →</a>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="wrap m-section">
