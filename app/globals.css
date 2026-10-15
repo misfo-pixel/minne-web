@@ -360,7 +360,11 @@ a.session-card:hover { box-shadow: 0 6px 20px rgba(122, 0, 25, .1); }
 .m-section { margin-top: 56px; }
 .m-section .display-title { margin-bottom: 18px; }
 .why-grid { display: grid; gap: 16px; }
-@media (min-width: 760px) { .why-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
+@media (min-width: 760px) {
+  .why-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  /* 卡片数是单数时，最后一张占满一行，别落单在左边 */
+  .why-grid > .why:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
 .why {
   position: relative; padding: 22px 20px 20px 20px; background: var(--card);
   border: 2.5px solid var(--ink); border-radius: 18px; box-shadow: 4px 4px 0 var(--ink);
