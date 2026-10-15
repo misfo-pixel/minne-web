@@ -35,7 +35,7 @@ const ZH: Copy = {
   switchHref: '/en/merchants',
   kicker: '商家入驻 · 一起拼团',
   title: <>凑够单，<em>再出发</em></>,
-  sub: '想把亚超好货、家庭烘焙卖给明大同学，又怕备了货没人买、跑一趟只送两三单？在明尼助手开一场团，人够了再出发。',
+  sub: '想把拿手菜、亚超好货、家庭烘焙卖给明大同学，又怕备了货没人买、跑一趟只送两三单？在明尼助手开一场团，人够了再出发。',
   apply: '申请开店码',
   applySubject: '开店',
   howLink: '看看怎么开团',
@@ -43,6 +43,7 @@ const ZH: Copy = {
   whyTitle: '明尼助手能帮你做什么',
   why: [
     { title: '不够门槛，不用出发', text: '每场团设一个成团门槛，比如 10 单。截单时没凑够，这场团和里面的订单自动取消，不用白跑一趟。' },
+    { title: '一次做一批，价格可以更低', text: '拼团是先收单、再一起做：一次出几十份，备料、出餐、跑一趟的成本都摊薄了。菜单不用长，挑三五样拿手菜，价格比堂食低一点，更容易凑够单。' },
     { title: '送到一个点，不用挨家送', text: '取货点你自己定，每个点的配送费也你自己定。' },
     { title: '钱的事，你和买家自己定', text: '明尼助手只帮你记下谁要了什么，不经手任何资金，也不从你的单里抽成。' },
     { title: '一键出海报', text: '开团后点一下，生成列出商品、取货点和截单时间的长图海报，底部带小程序码。发朋友圈、发群，买家长按识别就能下单。' }
@@ -53,7 +54,7 @@ const ZH: Copy = {
     { title: '在日历上点一天', text: '「我的小店」有一个两周的日历，点哪天就在哪天开团。小灰点是别家的团，错开同类的店更容易成团。', img: 's05-dash.jpg' },
     { title: '设门槛和取货点', text: '填出发时间、截单时间、成团门槛，勾选这一场去哪几个取货点，点「开团」。', img: 's07-session.jpg' },
     { title: '一键出海报', text: '在场次卡片上点「海报」。杂志、黑板、手账三种版式随时切换，保存后发朋友圈、发群。', img: 'styles.jpg' },
-    { title: '接单到送达，三个按钮', text: '成团后用邮件联系买家收款，收到钱点「确认订单」；出发点「开始配送」，买家取到货点「已送达」。', img: 's09-orders.jpg' }
+    { title: '接单到送达，三个按钮', text: '成团后用邮件联系买家收款，收到钱点「确认订单」；出发点「开始配送」；送到取货点拍一张照片，点「已送达」，买家会收到通知。', img: 's09-orders.jpg' }
   ],
   faqTitle: '常见问题',
   faq: [
@@ -75,7 +76,7 @@ const EN: Copy = {
   switchHref: '/merchants',
   kicker: 'For sellers · Group-buy',
   title: <>Fill the order first, <em>then go</em></>,
-  sub: 'Want to sell Asian groceries or home baking to UMN students, but worried you\'ll stock up and nobody buys, or drive over for two or three orders? Open a session on 明尼助手 and only head out once enough people have signed up.',
+  sub: 'Want to sell your signature dishes, Asian groceries or home baking to UMN students, but worried you\'ll stock up and nobody buys, or drive over for two or three orders? Open a session on 明尼助手 and only head out once enough people have signed up.',
   apply: 'Get a shop code',
   applySubject: 'Open a shop',
   howLink: 'See how it works',
@@ -83,6 +84,7 @@ const EN: Copy = {
   whyTitle: 'What group-buy does for you',
   why: [
     { title: 'Not enough orders? Don\'t go.', text: 'Every session has a minimum, say 10 orders. If it isn\'t met by the cutoff, the session and its orders are cancelled automatically.' },
+    { title: 'Cook in batches, price lower', text: 'Orders come in first, then you make them all at once. Dozens of portions in one go spread out the cost of ingredients, prep and the trip. Keep the menu short: three to five dishes you do best, priced a little below dine-in, fill up faster.' },
     { title: 'One spot, not door to door', text: 'You choose the pickup points, and you set the delivery fee for each one.' },
     { title: 'Money is between you and your buyers', text: '明尼助手 only records who ordered what. We never handle any money and take no commission.' },
     { title: 'One-tap posters', text: 'One tap turns a session into a long poster with your products, pickup points, cutoff time and a mini program code. Share it; buyers long-press the code to order.' }
@@ -93,7 +95,7 @@ const EN: Copy = {
     { title: 'Pick a day on the calendar', text: 'My Shop has a two-week calendar. Gray dots are other shops\' sessions; avoid days when similar shops are running.', img: 's05-dash.jpg' },
     { title: 'Set the minimum and pickup points', text: 'Set the departure time, cutoff and minimum, tick the pickup points for this session, then tap Open Session.', img: 's07-session.jpg' },
     { title: 'Make a poster', text: 'Tap Poster on the session card. Switch between Magazine, Chalkboard and Scrapbook, then save and share.', img: 'styles.jpg' },
-    { title: 'Orders to delivery in three taps', text: 'Once it fills, email buyers to collect payment and tap Confirm Order. Tap Start Delivery when you leave; buyers tap Delivered when they pick up.', img: 's09-orders.jpg' }
+    { title: 'Orders to delivery in three taps', text: 'Once it fills, email buyers to collect payment and tap Confirm Order. Tap Start Delivery when you leave. At the pickup point, take a photo and tap Delivered; buyers get notified.', img: 's09-orders.jpg' }
   ],
   faqTitle: 'FAQ',
   faq: [
