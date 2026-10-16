@@ -9,6 +9,8 @@ export type ImportCopy = {
   pageDesc: string
   headTitle: string
   headSub: string
+  switchLabel: string
+  switchHref: string
   codeTitle: string
   codeHint: string
   codeLabel: string
@@ -40,6 +42,13 @@ export type ImportCopy = {
   errNetwork: string
   errPhoto: string
   errNoPrice: (name: string) => string
+  // 店长后台里导入（已登录，核对完直接上架）
+  parsesLeftToday: (n: number) => string
+  sendShop: (n: number) => string
+  sendingShop: string
+  doneTitleShop: (n: number) => string
+  doneTextShop: string
+  backToItems: string
 }
 
 export const COPY: Record<Lang, ImportCopy> = {
@@ -48,6 +57,8 @@ export const COPY: Record<Lang, ImportCopy> = {
     pageDesc: '贴菜单链接、文字或照片，AI 整理成商品表，回到明尼助手小程序一次上架。',
     headTitle: '导入菜单',
     headSub: '贴链接、贴文字或拍照，AI 整理好，回小程序一次上架',
+    switchLabel: 'English',
+    switchHref: '/en/import',
     codeTitle: '输入导入码',
     codeHint: '在明尼助手小程序「我的小店 → 商品管理 → 从网页导入菜单」里拿到',
     codeLabel: '导入码',
@@ -78,13 +89,21 @@ export const COPY: Record<Lang, ImportCopy> = {
     doneText: '回到小程序的导入页，列表会自动出现。核对一遍，点「上架」就完成了。',
     errNetwork: '网络出错了，请重试',
     errPhoto: '有照片读不出来，换一张试试',
-    errNoPrice: name => `「${name}」还没填价格`
+    errNoPrice: name => `「${name}」还没填价格`,
+    parsesLeftToday: n => `今天还能整理 ${n} 次`,
+    sendShop: n => `上架 ${n} 件`,
+    sendingShop: '上架中…',
+    doneTitleShop: n => `已上架 ${n} 件`,
+    doneTextShop: '买家已经能在店里看到了。照片可以在商品列表里点商品图一件件补。',
+    backToItems: '回到商品列表'
   },
   en: {
     pageTitle: 'Import a menu',
     pageDesc: 'Paste a menu link, text or photos. AI turns it into a product list, then you list everything at once in the 明尼助手 mini program.',
     headTitle: 'Import a menu',
     headSub: 'Paste a link, paste text or take photos. AI sorts it out, then list everything at once in the mini program.',
+    switchLabel: '中文',
+    switchHref: '/import',
     codeTitle: 'Enter your import code',
     codeHint: 'Get it in the 明尼助手 mini program: My Shop → Manage Products → Import a menu from the web',
     codeLabel: 'Import code',
@@ -115,7 +134,13 @@ export const COPY: Record<Lang, ImportCopy> = {
     doneText: 'Go back to the import page in the mini program and the list will appear on its own. Review the items and list them, and you’re done.',
     errNetwork: 'Network error, please try again',
     errPhoto: 'Some photos couldn’t be read. Try another one.',
-    errNoPrice: name => `“${name}” has no price yet`
+    errNoPrice: name => `“${name}” has no price yet`,
+    parsesLeftToday: n => `${n} AI ${n === 1 ? 'run' : 'runs'} left today`,
+    sendShop: n => `Add ${n} ${n === 1 ? 'item' : 'items'} to my shop`,
+    sendingShop: 'Adding…',
+    doneTitleShop: n => `Added ${n} ${n === 1 ? 'item' : 'items'}`,
+    doneTextShop: 'Buyers can see them in your shop now. Add photos from the item list by clicking each item’s picture.',
+    backToItems: 'Back to Items'
   }
 }
 
@@ -128,6 +153,10 @@ const ERRORS_EN: Record<string, string> = {
   '导入码不对、已过期或已经提交过': 'This code is wrong, expired, or already used.',
   '这个导入码的整理次数用完了，请在小程序里重新生成': 'This code has no AI runs left. Generate a new one in the mini program.',
   '没有可导入的商品': 'There are no items to import.',
+  '今天的 AI 整理次数用完了，明天再试': 'You’ve used today’s AI runs. Please try again tomorrow.',
+  '登录已失效，请重新登录': 'You’ve been signed out. Please sign in again.',
+  '网页上改商品文字还没开通，请先在小程序里改': 'Importing on the web isn’t switched on yet. Please use the mini program for now.',
+  '内容校验服务暂时不可用，请稍后重试': 'Content review is unavailable right now. Please try again later.',
   '未知操作': 'Unknown action.',
   '链接格式不对': 'That doesn’t look like a valid link.',
   '外卖平台的页面读不了，请打开商家自己的菜单页，或者复制菜单文字、拍照上传':
@@ -150,5 +179,8 @@ export function localizeError(message: string, lang: Lang): string {
   if (hit) return hit
   const m = message.match(/^打不开这个网页（(\d+)）$/)
   if (m) return `Couldn’t open that page (${m[1]}).`
+  const lim = message.match(/^店里最多 (\d+) 件商品，这次最多还能导入 (\d+) 件$/)
+  if (lim) return `A shop can have up to ${lim[1]} items. You can import ${lim[2]} more.`
+  if (/^文字可能包含.+，请修改后再保存$/.test(message)) return 'Some of the text didn’t pass content review. Remove or edit the flagged items and try again.'
   return message
 }

@@ -598,3 +598,10 @@ a.session-card:hover { box-shadow: 0 6px 20px rgba(122, 0, 25, .1); }
 .sa-photo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .sa-photo-actions label.btn { cursor: pointer; }
 .sa-disabled { opacity: .5; pointer-events: none; }
+/* 店长后台、导入菜单页右上角的中英切换（浅色底，和商家页深色底上的 .lang-switch 区分开） */
+.page-lang {
+  flex: none; align-self: flex-start; padding: 4px 12px; font-size: 13px; font-weight: 700; color: var(--ink);
+  background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
+}
+.page-lang:hover { color: var(--maroon); border-color: var(--maroon); }
+.imp-done-back { margin-top: 16px; }

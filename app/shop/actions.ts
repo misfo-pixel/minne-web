@@ -1,6 +1,7 @@
 'use server'
 
 import { cookies } from 'next/headers'
+import { fetchMenuPage, parseMenu, type ParsedItem } from '@/lib/menuParse'
 import { callShop, type CallResult, type CloudFn } from '@/lib/shopApi'
 import type {
   AdminItem, AdminOrder, AdminSession, Dashboard, Fail, ItemDraft, OrderTab, Result, SessionDraft, SessionForm, ShopInfo
@@ -253,4 +254,43 @@ export async function deleteItem(itemId: string): Promise<Result> {
 
 export async function setUseCategory(use: boolean): Promise<Result> {
   return done(await call('manage', 'setUseCategory', { use: use === true }))
+}
+
+// ---- 导入菜单（已登录，不用导入码） ----
+// 和 /import 用同一套抓网页、AI 整理（lib/menuParse）。每次调 AI 前先让云函数记一次数（每家店每天有上限），
+// 读不到网页就不占次数；核对完由云函数过 TMS 后直接上架
+
+const MAX_IMAGES = 4
+const MAX_IMAGE_CHARS = 1_500_000   // 前端压过之后一张远小于这个；兜底防直接往接口塞大图
+
+export async function parseShopMenu(input: { url?: string; text?: string; images?: string[] }): Promise<Result<{ items: ParsedItem[]; parsesLeft: number }>> {
+  let text = str(input?.text).trim()
+  const images = (Array.isArray(input?.images) ? input.images : [])
+    .filter(x => typeof x === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(x) && x.length < MAX_IMAGE_CHARS)
+    .slice(0, MAX_IMAGES)
+  if (input?.url) {
+    const page = await fetchMenuPage(str(input.url))
+    if ('error' in page) return { ok: false, message: page.error }
+    text = page.text
+  }
+  if (!text && !images.length) return { ok: false, message: '请先贴链接、文字或选照片' }
+
+  const quota = await call('manage', 'useMenuParse')
+  if (!quota.ok) return fail(quota)
+  const r = await parseMenu({ text, images })
+  if ('error' in r) return { ok: false, message: r.error }
+  return { ok: true, items: r.items, parsesLeft: num(quota.data.left) }
+}
+
+export async function importShopItems(items: ParsedItem[]): Promise<Result<{ count: number }>> {
+  const list = (Array.isArray(items) ? items : []).slice(0, 150).map(i => ({
+    name: str(i?.name).slice(0, 40),
+    price: Number(i?.price),
+    unit: str(i?.unit).slice(0, 6),
+    description: str(i?.description).slice(0, 200),
+    category: str(i?.category).slice(0, 12),
+    restricted: i?.restricted === true
+  }))
+  const r = await call('manage', 'importItems', { items: list })
+  return r.ok ? { ok: true, count: num(r.data.count) } : fail(r)
 }

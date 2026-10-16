@@ -7,9 +7,21 @@ import { COPY, localizeError, type Lang } from '@/lib/importCopy'
 
 // 导入菜单的网页端：输码 → 贴链接 / 文字 / 照片 → AI 整理 → 核对 → 发回小程序。
 // 菜单分好几页的，可以「再加一部分」，结果接在后面。
+//
+// 店长后台（/shop）里也用这个组件，传 shop 进来：已经登录了，不用输码，
+// 整理和上架换成 shop 给的两个函数，核对完直接上架，不用再回小程序。
 
 type Row = ParsedItem & { picked: boolean; priceText: string }
 type Source = 'url' | 'text' | 'photo'
+type ParseInput = { url?: string; text?: string; images?: string[] }
+type Fail = { ok: false; message: string }
+
+export type ShopImport = {
+  name: string
+  parse: (input: ParseInput) => Promise<{ ok: true; items: ParsedItem[]; parsesLeft: number } | Fail>
+  submit: (items: ParsedItem[]) => Promise<{ ok: true; count: number } | Fail>
+  onDone: () => void
+}
 
 const MAX_PHOTOS = 4
 
@@ -39,12 +51,14 @@ function toRows(items: ParsedItem[]): Row[] {
   }))
 }
 
-export default function ImportClient({ lang = 'zh' }: { lang?: Lang }) {
+export default function ImportClient({ lang = 'zh', shop }: { lang?: Lang; shop?: ShopImport }) {
   const c = COPY[lang]
-  const [step, setStep] = useState<'code' | 'input' | 'review' | 'done'>('code')
+  const [step, setStep] = useState<'code' | 'input' | 'review' | 'done'>(shop ? 'input' : 'code')
   const [code, setCode] = useState('')
-  const [shopName, setShopName] = useState('')
-  const [parsesLeft, setParsesLeft] = useState(0)
+  const [shopName, setShopName] = useState(shop?.name || '')
+  // 店长后台里是按天限次，整理过一次才知道今天还剩几次；null 表示还不知道
+  const [parsesLeft, setParsesLeft] = useState<number | null>(shop ? null : 0)
+  const noParsesLeft = parsesLeft !== null && parsesLeft <= 0
   const [source, setSource] = useState<Source>('url')
   const [url, setUrl] = useState('')
   const [text, setText] = useState('')
@@ -88,9 +102,9 @@ export default function ImportClient({ lang = 'zh' }: { lang?: Lang }) {
 
   const onParse = () => run(async () => {
     const input = source === 'url' ? { url } : source === 'text' ? { text } : { images: photos }
-    const r = await parse(code, input)
+    const r = shop ? await shop.parse(input) : await parse(code, input)
     if (!r.ok) return fail(r.message)
-    setParsesLeft(n => Math.max(0, n - 1))
+    setParsesLeft(n => ('parsesLeft' in r ? r.parsesLeft : Math.max(0, (n || 0) - 1)))
     setRows(prev => [...prev, ...toRows(r.items)])
     setStep('review')
   })
@@ -105,7 +119,7 @@ export default function ImportClient({ lang = 'zh' }: { lang?: Lang }) {
     const items = picked.map(({ name, priceText, unit, description, category }) => ({
       name: name.trim(), price: Number(priceText), unit, description, category, restricted: false
     }))
-    const r = await submit(code, items)
+    const r = shop ? await shop.submit(items) : await submit(code, items)
     if (!r.ok) return fail(r.message)
     setSent(r.count)
     setStep('done')
@@ -167,11 +181,11 @@ export default function ImportClient({ lang = 'zh' }: { lang?: Lang }) {
 
           <div className="imp-actions">
             <button className="btn btn-primary btn-lg" onClick={onParse}
-              disabled={pending || parsesLeft <= 0 || (source === 'url' ? !url.trim() : source === 'text' ? !text.trim() : !photos.length)}>
+              disabled={pending || noParsesLeft || (source === 'url' ? !url.trim() : source === 'text' ? !text.trim() : !photos.length)}>
               {pending ? c.parsing : c.parse}
             </button>
             {rows.length > 0 && <button className="btn btn-ghost" onClick={() => setStep('review')} disabled={pending}>{c.backToTable}</button>}
-            <span className="muted imp-left">{c.parsesLeft(parsesLeft)}</span>
+            {parsesLeft !== null && <span className="muted imp-left">{shop ? c.parsesLeftToday(parsesLeft) : c.parsesLeft(parsesLeft)}</span>}
           </div>
         </div>
       )}
@@ -180,7 +194,7 @@ export default function ImportClient({ lang = 'zh' }: { lang?: Lang }) {
         <div className="imp-card">
           <div className="imp-review-head">
             <h2 className="imp-title">{c.reviewTitle(picked.length)}</h2>
-            <button className="btn btn-ghost btn-sm" onClick={() => setStep('input')} disabled={pending || parsesLeft <= 0}>{c.addMore}</button>
+            <button className="btn btn-ghost btn-sm" onClick={() => setStep('input')} disabled={pending || noParsesLeft}>{c.addMore}</button>
           </div>
           <p className="muted">{c.reviewHint}</p>
 
@@ -211,7 +225,7 @@ export default function ImportClient({ lang = 'zh' }: { lang?: Lang }) {
 
           <div className="imp-actions imp-sticky">
             <button className="btn btn-primary btn-lg" onClick={onSubmit} disabled={pending || !picked.length}>
-              {pending ? c.sending : c.send(picked.length)}
+              {pending ? (shop ? c.sendingShop : c.sending) : shop ? c.sendShop(picked.length) : c.send(picked.length)}
             </button>
           </div>
         </div>
@@ -220,8 +234,9 @@ export default function ImportClient({ lang = 'zh' }: { lang?: Lang }) {
       {step === 'done' && (
         <div className="imp-card imp-done">
           <div className="imp-done-mark">✓</div>
-          <h2 className="imp-title">{c.doneTitle(sent)}</h2>
-          <p>{c.doneText}</p>
+          <h2 className="imp-title">{shop ? c.doneTitleShop(sent) : c.doneTitle(sent)}</h2>
+          <p>{shop ? c.doneTextShop : c.doneText}</p>
+          {shop && <button className="btn btn-primary imp-done-back" onClick={shop.onDone}>{c.backToItems}</button>}
         </div>
       )}
 

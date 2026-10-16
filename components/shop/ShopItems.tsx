@@ -1,7 +1,8 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { deleteItem, reloadItems, saveItem, setItemPhoto, setUseCategory, toggleItem } from '@/app/shop/actions'
+import { deleteItem, importShopItems, parseShopMenu, reloadItems, saveItem, setItemPhoto, setUseCategory, toggleItem } from '@/app/shop/actions'
+import ImportClient from '@/components/ImportClient'
 import { COPY, type Lang } from '@/lib/shopCopy'
 import { money } from '@/lib/shopFormat'
 import type { AdminItem, ItemDraft } from '@/lib/shopTypes'
@@ -13,6 +14,7 @@ import { useAction } from './useAction'
 
 type Props = {
   lang: Lang
+  shopName: string
   items: AdminItem[]
   useCategory: boolean
   onItems: (items: AdminItem[], useCategory: boolean) => void
@@ -22,10 +24,12 @@ type Props = {
 
 const EMPTY: ItemDraft = { name: '', price: 0, unit: '', description: '', specs: '', category: '', available: true }
 
-export default function ShopItems({ lang, items, useCategory, onItems, onAuthLost, notify }: Props) {
+export default function ShopItems({ lang, shopName, items, useCategory, onItems, onAuthLost, notify }: Props) {
   const c = COPY[lang]
   const { pending, error, run } = useAction(lang, onAuthLost, c.errNetwork)
   const [editing, setEditing] = useState<ItemDraft | null>(null)
+  // 导入菜单：和 /import 同一个组件，已登录所以不用码，核对完直接上架
+  const [importing, setImporting] = useState(false)
 
   const refresh = () => run(reloadItems, r => onItems(r.items, r.useCategory))
 
@@ -58,10 +62,31 @@ export default function ShopItems({ lang, items, useCategory, onItems, onAuthLos
 
   const switchCategory = (on: boolean) => run(() => setUseCategory(on), () => onItems(items, on))
 
+  if (importing) {
+    const authed = <T extends { ok: boolean; auth?: boolean }>(r: T) => {
+      if (!r.ok && r.auth) onAuthLost()
+      return r
+    }
+    return (
+      <div className="sa-section">
+        <div className="sa-tools">
+          <button className="btn btn-ghost btn-sm" onClick={() => { setImporting(false); refresh() }}>{c.backToItems}</button>
+        </div>
+        <ImportClient lang={lang} shop={{
+          name: shopName,
+          parse: async input => authed(await parseShopMenu(input)),
+          submit: async list => authed(await importShopItems(list)),
+          onDone: () => { setImporting(false); refresh() }
+        }} />
+      </div>
+    )
+  }
+
   return (
     <div className="sa-section">
       <div className="sa-tools">
         <button className="btn btn-primary btn-sm" onClick={() => setEditing({ ...EMPTY })} disabled={pending}>{c.newItem}</button>
+        <button className="btn btn-ghost btn-sm" onClick={() => setImporting(true)} disabled={pending}>{c.importMenu}</button>
         <label className="sa-check">
           <input type="checkbox" checked={useCategory} disabled={pending} onChange={e => switchCategory(e.target.checked)} />
           <span>{c.useCategory}</span>

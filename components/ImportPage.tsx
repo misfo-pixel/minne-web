@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import ImportClient from '@/components/ImportClient'
 import { COPY, type Lang } from '@/lib/importCopy'
 
@@ -12,6 +13,7 @@ export default function ImportPage({ lang }: { lang: Lang }) {
           <h1 className="page-head-title">{c.headTitle}</h1>
           <div className="page-head-sub">{c.headSub}</div>
         </div>
+        <Link href={c.switchHref} className="page-lang" hrefLang={lang === 'zh' ? 'en' : 'zh-CN'}>{c.switchLabel}</Link>
       </div>
       <ImportClient lang={lang} />
     </main>

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import ShopAdmin from '@/components/shop/ShopAdmin'
 import { COPY, type Lang } from '@/lib/shopCopy'
 
@@ -13,6 +14,7 @@ export default function ShopPage({ lang }: { lang: Lang }) {
           <h1 className="page-head-title">{c.pageTitle}</h1>
           <div className="page-head-sub">{c.headSub}</div>
         </div>
+        <Link href={c.switchHref} className="page-lang" hrefLang={lang === 'zh' ? 'en' : 'zh-CN'}>{c.switchLabel}</Link>
       </div>
       <ShopAdmin lang={lang} />
     </main>

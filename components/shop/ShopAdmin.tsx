@@ -124,7 +124,7 @@ export default function ShopAdmin({ lang }: { lang: Lang }) {
           onAuthLost={onAuthLost} notify={notify} />
       )}
       {tab === 'items' && (
-        <ShopItems lang={lang} items={data.items} useCategory={shop.useCategory} onItems={setItems}
+        <ShopItems lang={lang} shopName={shop.name} items={data.items} useCategory={shop.useCategory} onItems={setItems}
           onAuthLost={onAuthLost} notify={notify} />
       )}
 

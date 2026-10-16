@@ -21,7 +21,7 @@ const points = [
   { name: 'Macalester College', fee: 2, eta_minutes: 45 }
 ]
 
-const db: { sessions: Doc[]; items: Doc[]; orders: Doc[]; useCategory: boolean; seq: number } = {
+const db: { sessions: Doc[]; items: Doc[]; orders: Doc[]; useCategory: boolean; seq: number; parses?: number } = {
   seq: 100,
   useCategory: true,
   sessions: [
@@ -154,6 +154,16 @@ export async function mockCall(fn: CloudFn, action: string, p: Record<string, un
       if (!it) return no('没有权限')
       it.image = p.remove === true ? '' : 'data:image/jpeg;base64,' + String(p.image || '')
       return ok({ image_url: it.image })
+    }
+    case 'manage.useMenuParse':
+      db.parses = (db.parses || 0) + 1
+      return db.parses > 20 ? no('今天的 AI 整理次数用完了，明天再试') : ok({ left: 20 - db.parses })
+    case 'manage.importItems': {
+      const list = (p.items as Record<string, unknown>[] || []).filter(i => i.name && !i.restricted && Number(i.price) >= 0)
+      if (!list.length) return no('没有可导入的商品')
+      list.forEach(i => db.items.push({ _id: 'i' + ++db.seq, image: '', specs: '', available: true, ...i, price: Number(i.price) }))
+      if (list.some(i => i.category)) db.useCategory = true
+      return ok({ count: list.length })
     }
     case 'manage.toggleItem': {
       const it = db.items.find(i => i._id === p.itemId)
