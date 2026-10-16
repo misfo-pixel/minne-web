@@ -25,6 +25,19 @@ const KEY = process.env.WEBFEED_KEY || ''
 
 type Params = Record<string, string | number | undefined>
 
+// next build 预渲染首页、拼团列表时 Next 会设这个（运行时没有）
+const BUILDING = process.env.NEXT_PHASE === 'phase-production-build'
+
+async function fetchOnce<T>(qs: URLSearchParams, action: unknown): Promise<T | null> {
+  const res = await fetch(`${BASE}?${qs}`, { headers: { 'x-web-key': KEY } })
+  if (res.status === 404) return null
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok || !data.success) {
+    throw Object.assign(new Error(`webFeed ${action} 失败：${res.status} ${data.message || ''}`), { status: res.status })
+  }
+  return data as T
+}
+
 async function call<T>(params: Params): Promise<T | null> {
   if (!BASE) {
     if (process.env.NODE_ENV === 'production' && !process.env.WEBFEED_MOCK) throw new Error('WEBFEED_URL 没配')
@@ -34,11 +47,31 @@ async function call<T>(params: Params): Promise<T | null> {
   Object.entries(params).forEach(([k, v]) => {
     if (v !== undefined && v !== '') qs.set(k, String(v))
   })
-  const res = await fetch(`${BASE}?${qs}`, { headers: { 'x-web-key': KEY } })
-  if (res.status === 404) return null
-  const data = await res.json()
-  if (!res.ok || !data.success) throw new Error(`webFeed ${params.action} 失败：${res.status} ${data.message || ''}`)
-  return data as T
+  try {
+    try {
+      return await fetchOnce<T>(qs, params.action)
+    } catch (e) {
+      // 云函数冷启动常常超过 3 秒的默认超时（504），再来一次多半就是热的了。
+      // 403（钥匙不对）这类重试也没用，直接报
+      const status = (e as { status?: number }).status
+      if (status && status < 500) throw e
+      // 网址要和第一次不一样：Next 会把一次渲染里网址相同的 fetch 合并成一个，原样再发拿到的还是那个 504。
+      // webFeed 只认自己用到的参数，多一个 retry 不影响结果
+      const again = new URLSearchParams(qs)
+      again.set('retry', '1')
+      return await fetchOnce<T>(again, params.action)
+    }
+  } catch (e) {
+    // 构建时云函数超时、出错（5xx、连不上）别让整次部署失败：页面先按「暂无」生成，上线后到 revalidate 时间自动重新拉。
+    // 403 这类配置错误照样让构建失败——不然钥匙配错了会悄悄上线一个空网站。
+    // 只在构建时这样；运行时照常抛错，Next 会继续给旧的缓存，不会把空页面缓存下来
+    const status = (e as { status?: number }).status
+    if (BUILDING && !(status && status < 500)) {
+      console.warn(`[build] ${(e as Error).message}，这一页先按空数据生成`)
+      return null
+    }
+    throw e
+  }
 }
 
 export const PAGE_SIZE = 20
