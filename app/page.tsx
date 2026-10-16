@@ -17,7 +17,7 @@ export default async function Home() {
       <section className="hero">
         <div className="wrap hero-row">
           <div className="hero-copy">
-            <span className="kicker">明大中国同学的生活小程序</span>
+            <span className="kicker">中国留学生的生活小程序</span>
             <h1 className="hero-title"><span>明尼生活，</span><em>一站搞定</em></h1>
             <p className="hero-sub">二手、转租、跑腿、找搭子、拼团。网页上先逛逛，联系和下单都在微信小程序里。</p>
             <div className="hero-actions">
@@ -78,7 +78,7 @@ export default async function Home() {
       <section className="wrap home-section">
         <Link href="/merchants" className="merchant-band">
           <span className="merchant-band-kicker">商家入驻</span>
-          <span className="merchant-band-title">想把好东西卖给明大同学？</span>
+          <span className="merchant-band-title">你的好手艺，值得更多人知道</span>
           <span className="merchant-band-sub">开一场团，凑够单再出发。不抽成，不经手钱。</span>
           <span className="merchant-band-go">了解怎么开团 →</span>
         </Link>

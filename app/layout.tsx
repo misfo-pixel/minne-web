@@ -10,7 +10,7 @@ const SITE_URL = process.env.SITE_URL ||
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: '明尼助手 · 明尼生活，一站搞定', template: '%s · 明尼助手' },
-  description: '明大中国同学的生活小程序：二手市场、公寓转租、任务委托、兴趣群组、一起拼团。',
+  description: '中国留学生的生活小程序：二手市场、公寓转租、任务委托、兴趣群组、一起拼团。',
   openGraph: { siteName: '明尼助手', locale: 'zh_CN', type: 'website' }
 }
 
