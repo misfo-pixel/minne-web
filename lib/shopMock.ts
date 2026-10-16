@@ -133,7 +133,7 @@ export async function mockCall(fn: CloudFn, action: string, p: Record<string, un
       return ok()
     }
     case 'manage.listItems':
-      return ok({ items: db.items.map(i => ({ ...i, image_url: '' })), useCategory: db.useCategory })
+      return ok({ items: db.items.map(i => ({ ...i, image_url: i.image })), useCategory: db.useCategory })
     case 'manage.setUseCategory':
       db.useCategory = p.use === true
       return ok()
@@ -147,7 +147,13 @@ export async function mockCall(fn: CloudFn, action: string, p: Record<string, un
       const it = p.itemId ? db.items.find(i => i._id === p.itemId) : null
       if (it) Object.assign(it, data)
       else db.items.push({ _id: 'i' + ++db.seq, image: '', ...data })
-      return ok()
+      return ok({ itemId: it ? it._id : 'i' + db.seq })
+    }
+    case 'manage.setItemImage': {
+      const it = db.items.find(i => i._id === p.itemId)
+      if (!it) return no('没有权限')
+      it.image = p.remove === true ? '' : 'data:image/jpeg;base64,' + String(p.image || '')
+      return ok({ image_url: it.image })
     }
     case 'manage.toggleItem': {
       const it = db.items.find(i => i._id === p.itemId)

@@ -38,13 +38,14 @@
 
 - 登录：店长在小程序「我的小店 → 电脑上管理」拿 8 位登录码（5 分钟、一次性），网页上输入后换一个 7 天的登录凭证，存在 httpOnly cookie 里，页面脚本读不到。小程序那页有「退出所有网页登录」
 - 店长身份、能不能动这家店，全由云函数核对，网站这边不做权限判断（见 `campus-helper/cloudfunctions/shopManage/index.js` 的「网页登录」）
-- 网页能做的操作是云函数里的白名单：订单、场次、商品文字和价格、上下架。开店、店铺资料（logo、取货点）、商品照片、海报、删店还是只能在小程序里做
+- 网页能做的操作是云函数里的白名单：订单、场次、商品（文字、价格、照片、上下架）。开店、店铺资料（logo、取货点）、海报、删店还是只能在小程序里做
 - 网页上新增商品或改商品文字，云函数先过腾讯云文本内容安全（TMS）；只改价格、上下架不送审
+- 商品照片在浏览器里压成 600KB 以内的 JPEG（`components/shop/photo.ts`），云函数先用微信 imgSecCheck 审，调不通再用腾讯云图片内容安全（IMS）。部署后传一张试试，看 shopManage 日志里有没有「imgSecCheck 调不通」：有的话要在腾讯云开通「图片内容安全」，给子账号加 QcloudIMSFullAccess
 - 这些页面不让搜索引擎收录。本地没配 `SHOPMANAGE_URL` 时用 `lib/shopMock.ts` 的演示小店，登录码随便输 8 位
 
 上线：
 
-1. 微信开发者工具里重新部署 `shopManage`（「上传并部署：云端安装依赖」，多了 `tencentcloud-sdk-nodejs-tms`）和 `shopOrders`
+1. 微信开发者工具里重新部署 `shopManage`（「上传并部署：云端安装依赖」，多了 `tencentcloud-sdk-nodejs-tms`、`tencentcloud-sdk-nodejs-ims`，`config.json` 里加了 imgSecCheck 的云调用权限）和 `shopOrders`
 2. 云开发控制台 → 云函数 → `shopManage` 和 `shopOrders` → 环境变量，都加 `WEB_KEY`（和 webFeed 同一个值）。`shopManage` 再加 `TMS_SECRET_ID`、`TMS_SECRET_KEY`（只授权 QcloudTMSFullAccess 的子账号密钥），超时调到 10 秒
 3. HTTP 访问服务新建两条：`/shopmanage` 关联 shopManage，`/shoporders` 关联 shopOrders
 4. Vercel 环境变量加 `SHOPMANAGE_URL`、`SHOPORDERS_URL`，重新部署

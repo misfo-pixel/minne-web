@@ -1,14 +1,15 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { deleteItem, reloadItems, saveItem, setUseCategory, toggleItem } from '@/app/shop/actions'
+import { deleteItem, reloadItems, saveItem, setItemPhoto, setUseCategory, toggleItem } from '@/app/shop/actions'
 import { COPY, type Lang } from '@/lib/shopCopy'
 import { money } from '@/lib/shopFormat'
 import type { AdminItem, ItemDraft } from '@/lib/shopTypes'
+import { compressPhoto } from './photo'
 import { useAction } from './useAction'
 
 // 商品：改价、上下架马上生效；新增、改文字由云函数先过腾讯云内容审核（见 shopManage 的 tmsCheck），
-// 不通过就把原因原样显示在编辑框里。照片网页上换不了，要回小程序。
+// 不通过就把原因原样显示在编辑框里。照片在浏览器里压好再传，云函数审核后存云存储（shopManage 的 setItemImage）。
 
 type Props = {
   lang: Lang
@@ -76,9 +77,11 @@ export default function ShopItems({ lang, items, useCategory, onItems, onAuthLos
           <div className="sa-items">
             {g.items.map(i => (
               <div key={i.id} className={`sa-item${i.available ? '' : ' sa-item-off'}`}>
-                {i.imageUrl
-                  ? <img src={i.imageUrl} alt="" className="sa-item-img" />
-                  : <span className="sa-item-img sa-item-img-empty" />}
+                <button className="sa-item-photo" onClick={() => setEditing({ ...i })} aria-label={c.edit}>
+                  {i.imageUrl
+                    ? <img src={i.imageUrl} alt="" className="sa-item-img" />
+                    : <span className="sa-item-img sa-item-img-empty">＋</span>}
+                </button>
                 <div className="sa-item-main">
                   <div className="sa-item-name">{i.name}</div>
                   <div className="sa-item-sub">
@@ -111,6 +114,9 @@ export default function ShopItems({ lang, items, useCategory, onItems, onAuthLos
   )
 }
 
+// 照片的三种状态：没动 / 换了一张新的（浏览器里压好的 data URL）/ 去掉
+type Photo = { kind: 'keep' } | { kind: 'new'; dataUrl: string } | { kind: 'remove' }
+
 function ItemEditor({ lang, draft, categories, onClose, onSaved, onAuthLost }: {
   lang: Lang
   draft: ItemDraft
@@ -122,16 +128,43 @@ function ItemEditor({ lang, draft, categories, onClose, onSaved, onAuthLost }: {
   const c = COPY[lang]
   const { pending, error, setError, run } = useAction(lang, onAuthLost, c.errNetwork)
   const [d, setD] = useState({ ...draft, priceText: draft.id ? String(draft.price) : '' })
+  const [photo, setPhoto] = useState<Photo>({ kind: 'keep' })
+  const [busyPhoto, setBusyPhoto] = useState(false)
   const set = (patch: Partial<typeof d>) => setD(x => ({ ...x, ...patch }))
+  const preview = photo.kind === 'new' ? photo.dataUrl : photo.kind === 'remove' ? '' : d.imageUrl || ''
+
+  const pickPhoto = async (file: File | undefined) => {
+    if (!file) return
+    setError('')
+    setBusyPhoto(true)
+    try {
+      setPhoto({ kind: 'new', dataUrl: await compressPhoto(file) })
+    } catch {
+      setError(c.photoBad)
+    } finally {
+      setBusyPhoto(false)
+    }
+  }
 
   const save = () => {
     const price = Number(d.priceText)
     if (!d.name.trim()) return setError(c.needName)
     if (d.priceText.trim() === '' || !(price >= 0)) return setError(c.needPrice)
-    run(() => saveItem({
-      id: d.id, name: d.name, price: Math.round(price * 100) / 100, unit: d.unit,
-      description: d.description, specs: d.specs, category: d.category, available: d.available
-    }), onSaved)
+    run(async () => {
+      const saved = await saveItem({
+        id: d.id, name: d.name, price: Math.round(price * 100) / 100, unit: d.unit,
+        description: d.description, specs: d.specs, category: d.category, available: d.available
+      })
+      if (!saved.ok || photo.kind === 'keep') return saved
+      // 新商品先建好再传照片。照片没过的话商品已经在了：记下 id，再点保存只会重传照片，不会多建一件
+      set({ id: saved.itemId })
+      const r = await setItemPhoto(saved.itemId, photo.kind === 'new' ? photo.dataUrl : null)
+      if (r.ok) {
+        set({ imageUrl: r.imageUrl })
+        setPhoto({ kind: 'keep' })
+      }
+      return r
+    }, onSaved)
   }
 
   return (
@@ -141,6 +174,20 @@ function ItemEditor({ lang, draft, categories, onClose, onSaved, onAuthLost }: {
         <div className="sa-modal-head">
           <h2 className="imp-title">{draft.id ? c.itemEditTitle : c.itemNewTitle}</h2>
           <button type="button" className="sa-x" onClick={onClose} aria-label={c.close}>×</button>
+        </div>
+        <div className="sa-photo-row">
+          {preview
+            ? <img src={preview} alt="" className="sa-photo" />
+            : <span className="sa-photo sa-photo-empty">{c.noPhoto}</span>}
+          <div className="sa-photo-actions">
+            <label className={`btn btn-ghost btn-sm${busyPhoto || pending ? ' sa-disabled' : ''}`}>
+              <input type="file" accept="image/*" hidden disabled={busyPhoto || pending}
+                onChange={e => { pickPhoto(e.target.files?.[0]); e.target.value = '' }} />
+              {busyPhoto ? c.photoBusy : preview ? c.photoChange : c.photoAdd}
+            </label>
+            {preview && <button type="button" className="sa-link sa-danger" disabled={pending} onClick={() => setPhoto({ kind: 'remove' })}>{c.photoRemove}</button>}
+            {photo.kind !== 'keep' && <span className="muted sa-tip">{c.photoPending}</span>}
+          </div>
         </div>
         <div className="sa-grid">
           <label className="sa-field sa-field-wide">
@@ -175,7 +222,7 @@ function ItemEditor({ lang, draft, categories, onClose, onSaved, onAuthLost }: {
         </label>
         {error && <p className="imp-error" role="alert">{error}</p>}
         <div className="imp-actions">
-          <button className="btn btn-primary" disabled={pending}>{pending ? c.saving : c.save}</button>
+          <button className="btn btn-primary" disabled={pending || busyPhoto}>{pending ? c.saving : c.save}</button>
           <button type="button" className="btn btn-ghost" onClick={onClose}>{c.close}</button>
         </div>
       </form>

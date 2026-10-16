@@ -100,7 +100,7 @@ const zh = {
   // 商品
   newItem: '新增商品',
   useCategory: '按分类显示',
-  photoTip: '照片请在小程序「商品管理」里换。新增、改文字要过内容审核，改价格和上下架马上生效。',
+  photoTip: '新增、改文字、换照片要过内容审核，改价格和上下架马上生效。点商品图可以直接换照片。',
   noItems: '还没有商品。可以点「新增商品」，或者在小程序里从网页导入整份菜单。',
   uncategorized: '未分类',
   onSale: '在售',
@@ -119,7 +119,14 @@ const zh = {
   needName: '请填写商品名称',
   needPrice: '请填写正确的价格',
   itemEditTitle: '修改商品',
-  itemNewTitle: '新增商品'
+  itemNewTitle: '新增商品',
+  noPhoto: '没有照片',
+  photoAdd: '添加照片',
+  photoChange: '换一张',
+  photoRemove: '去掉照片',
+  photoBusy: '处理中…',
+  photoPending: '点保存后生效',
+  photoBad: '这张照片读不了，换一张试试'
 }
 
 export type ShopCopy = typeof zh
@@ -214,7 +221,7 @@ const en: ShopCopy = {
 
   newItem: 'Add Item',
   useCategory: 'Group by category',
-  photoTip: 'Change photos in the mini program under Manage Products. New items and text edits go through content review; price changes and sold-out switches apply right away.',
+  photoTip: 'New items, text edits and photos go through content review; price changes and sold-out switches apply right away. Click an item’s picture to change its photo.',
   noItems: 'No items yet. Click “Add Item”, or import a whole menu from the web in the mini program.',
   uncategorized: 'Uncategorized',
   onSale: 'On sale',
@@ -233,7 +240,14 @@ const en: ShopCopy = {
   needName: 'Enter a name',
   needPrice: 'Enter a valid price',
   itemEditTitle: 'Edit Item',
-  itemNewTitle: 'Add Item'
+  itemNewTitle: 'Add Item',
+  noPhoto: 'No photo',
+  photoAdd: 'Add Photo',
+  photoChange: 'Change Photo',
+  photoRemove: 'Remove photo',
+  photoBusy: 'Processing…',
+  photoPending: 'Applies when you save',
+  photoBad: 'Couldn’t read this photo. Try another one.'
 }
 
 export const COPY: Record<Lang, ShopCopy> = { zh, en }
@@ -268,7 +282,10 @@ const ERRORS_EN: Record<string, string> = {
   '请填写商品名称': 'Enter a name.',
   '请填写正确的价格': 'Enter a valid price.',
   '网页上改商品文字还没开通，请先在小程序里改': 'Editing item text on the web isn’t switched on yet. Please edit it in the mini program for now.',
-  '内容校验服务暂时不可用，请稍后重试': 'Content review is unavailable right now. Please try again later.'
+  '内容校验服务暂时不可用，请稍后重试': 'Content review is unavailable right now. Please try again later.',
+  '图片格式不对，请换一张': 'This image format isn’t supported. Try another photo.',
+  '图片太大了，请换一张': 'This photo is too large. Try another one.',
+  '图片审核暂时不可用，请先在小程序里传照片': 'Photo review is unavailable right now. Please add the photo in the mini program for now.'
 }
 
 const LABEL_EN: Record<string, string> = {
@@ -282,6 +299,8 @@ export function localizeError(message: string, lang: Lang): string {
   if (hit) return hit
   const m = message.match(/^文字可能包含(.+)，请修改后再保存$/)
   if (m) return `The text may contain ${LABEL_EN[m[1]] || 'content that breaks the rules'}. Please edit it and save again.`
+  const img = message.match(/^图片可能包含(.+)，换一张试试$/)
+  if (img) return `This photo may contain ${LABEL_EN[img[1]] || 'content that breaks the rules'}. Try another one.`
   const max = message.match(/^最多同时开 (\d+) 场$/)
   if (max) return `You can have at most ${max[1]} group orders open at once.`
   return message

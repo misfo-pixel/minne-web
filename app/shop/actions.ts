@@ -214,8 +214,8 @@ export async function cancelSession(sessionId: string): Promise<Result> {
   return done(await call('manage', 'cancelSession', { sessionId: str(sessionId) }))
 }
 
-export async function saveItem(d: ItemDraft): Promise<Result> {
-  return done(await call('manage', 'saveItem', {
+export async function saveItem(d: ItemDraft): Promise<Result<{ itemId: string }>> {
+  const r = await call('manage', 'saveItem', {
     itemId: d.id || '',
     name: str(d.name).slice(0, 40),
     price: Number(d.price),
@@ -224,7 +224,23 @@ export async function saveItem(d: ItemDraft): Promise<Result> {
     specs: str(d.specs).slice(0, 500),
     category: str(d.category).slice(0, 12),
     available: d.available !== false
-  }))
+  })
+  return r.ok ? { ok: true, itemId: str(r.data.itemId) } : fail(r)
+}
+
+// 换商品照片。浏览器已经压成 JPEG（见 components/shop/photo.ts），这里只认 JPEG 的 data URL；
+// 审核、存云存储、删旧图都在云函数里。image 为 null 是去掉照片
+const MAX_PHOTO_CHARS = 1_400_000   // 1MB 的图转成 base64 约 1.37M 字符，云函数那边也卡 1MB
+
+export async function setItemPhoto(itemId: string, image: string | null): Promise<Result<{ imageUrl: string }>> {
+  let payload: Raw = { itemId: str(itemId), remove: true }
+  if (image !== null) {
+    const m = /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(String(image))
+    if (!m || m[1].length > MAX_PHOTO_CHARS) return { ok: false, message: '图片格式不对，请换一张' }
+    payload = { itemId: str(itemId), image: m[1] }
+  }
+  const r = await call('manage', 'setItemImage', payload)
+  return r.ok ? { ok: true, imageUrl: str(r.data.image_url) } : fail(r)
 }
 
 export async function toggleItem(itemId: string, available: boolean): Promise<Result> {

@@ -66,7 +66,7 @@ export type AdminItem = {
   imageUrl: string
 }
 
-export type ItemDraft = Omit<AdminItem, 'id' | 'imageUrl'> & { id?: string }
+export type ItemDraft = Omit<AdminItem, 'id' | 'imageUrl'> & { id?: string; imageUrl?: string }
 
 export type SessionDraft = {
   id?: string

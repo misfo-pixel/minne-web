@@ -589,3 +589,12 @@ a.session-card:hover { box-shadow: 0 6px 20px rgba(122, 0, 25, .1); }
 .sa .kind-switch { min-width: 0; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
 .sa .kind-switch::-webkit-scrollbar { display: none; }
 .sa .kind-switch button { flex: none; white-space: nowrap; }
+/* 商品照片 */
+.sa-item-photo { flex: none; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 10px; }
+.sa-item-img-empty { display: inline-flex; align-items: center; justify-content: center; color: #b9aea6; font-size: 20px; }
+.sa-photo-row { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.sa-photo { width: 96px; height: 96px; flex: none; border-radius: 14px; object-fit: cover; border: 1px solid var(--line); }
+.sa-photo-empty { display: inline-flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); background: #f5f0ea; }
+.sa-photo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.sa-photo-actions label.btn { cursor: pointer; }
+.sa-disabled { opacity: .5; pointer-events: none; }
