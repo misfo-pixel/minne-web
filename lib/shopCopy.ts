@@ -1,0 +1,288 @@
+// 店长后台（/shop 和 /en/shop）的中英文案。英文这份的键必须和中文一模一样（类型上卡住了）。
+// 云函数返回的错误提示是中文原文，英文页用 localizeError 查表翻译，查不到就原样显示。
+// 云函数新增或改了提示，记得同步改下面的 ERRORS_EN。
+
+import type { OrderStatus, SessionState } from './shopTypes'
+
+export type Lang = 'zh' | 'en'
+
+const zh = {
+  pageTitle: '店长后台',
+  pageDesc: '在电脑上管理一起拼团的小店：看订单、确认订单、开团、改商品。',
+  headSub: '在电脑上看订单、开团、改商品',
+
+  // 登录
+  loginTitle: '输入登录码',
+  loginHint: '在明尼助手小程序「我的小店 → 电脑上管理」里拿到，5 分钟内有效',
+  loginLabel: '登录码',
+  loginGo: '登录',
+  loginBusy: '登录中…',
+  loginKeep: '登录后这台电脑 7 天内不用再输。在别人的电脑上用完记得退出。',
+  loading: '读取中…',
+  logout: '退出登录',
+  takedown: '店铺已被下架，如有异议请在小程序「意见反馈」里联系我们。',
+
+  tabs: { orders: '订单', sessions: '场次', items: '商品' } as Record<'orders' | 'sessions' | 'items', string>,
+  retry: '重试',
+  errNetwork: '网络不太好，请重试',
+  saved: '已保存',
+  updated: '已更新',
+
+  // 订单
+  allSessions: '全部场次',
+  sessionOption: (when: string, n: number) => `${when} · ${n} 单`,
+  orderTabs: { forming: '拼团中', pending: '待确认', active: '进行中', done: '已完成' } as Record<'forming' | 'pending' | 'active' | 'done', string>,
+  statusText: {
+    forming: '拼团中', confirming: '待确认', pending: '待确认', accepted: '已确认',
+    delivering: '配送中', completed: '已完成', cancelled: '已取消'
+  } as Record<OrderStatus, string>,
+  noOrders: '暂无订单',
+  copyEmails: (n: number) => `复制 ${n} 个邮箱`,
+  copiedEmails: (n: number) => `已复制 ${n} 个邮箱`,
+  copyFailed: '复制不了，请手动选中下面的邮箱',
+  emailsTip: '粘进邮件的「密送（BCC）」栏群发，买家互相看不到邮箱。',
+  exportCsv: '导出表格',
+  orderEmail: '邮箱',
+  orderWechat: '微信',
+  orderPhone: '手机',
+  orderNote: '备注',
+  orderUnlisted: '名单外地址，先确认能不能送到',
+  orderCancelled: (r: string) => `取消原因：${r}`,
+  copy: '复制',
+  copied: '已复制',
+  confirm: '确认订单',
+  reject: '拒单',
+  cancel: '取消',
+  startDelivery: '开始配送',
+  delivered: '已送达',
+  cancelPrompt: '取消这一单？可以写一句原因告诉买家（选填）',
+  csvHead: ['订单号', '日期', '状态', '昵称', '邮箱', '微信', '手机', '取货点', '商品', '备注', '金额', '下单时间'],
+
+  // 场次
+  newSession: '开新团',
+  noSessions: '还没有开着的团。点「开新团」挑一天。',
+  sessionTitle: (when: string, depart: string) => `${when} ${depart} 出发`,
+  sessionState: { open: '拼团中', formed: '已成团', failed: '未成团', cancelled: '已取消' } as Record<SessionState, string>,
+  countText: (n: number, min: number) => (min ? `${n} / ${min} 单` : `${n} 单`),
+  forcedTag: ' · 照常送',
+  cutoffLine: (at: string) => `截单 ${at}`,
+  confirmLine: (a: number, b: number, at: string) => `待确认 ${a} · 已确认 ${b} · ${at} 前确认`,
+  repeatTag: (w: string) => `每${w}`,
+  sessionOrders: '订单',
+  edit: '修改',
+  settings: '设置',
+  force: '照常送',
+  forceConfirm: '截单时不够门槛也按成团算。确定照常送？',
+  forcedDone: '已设为照常送',
+  cancelSession: '取消这一场',
+  cancelSessionConfirm: (n: number) => (n ? `这一场还有 ${n} 单，会一起取消并通知买家。确定取消？` : '确定取消这一场？'),
+  cancelledDone: '已取消',
+
+  formNew: '开新团',
+  formEdit: '修改场次',
+  formDate: '出发日期',
+  formDepart: '出发时间',
+  formCutoff: '截单时间（前一天）',
+  formMin: '成团门槛',
+  minOption: (n: number) => (n ? `${n} 单` : '不设门槛'),
+  formRepeat: '每周这一天自动开团',
+  formPoints: '这一场去哪几个取货点',
+  noPoints: '还没有取货点，请先在小程序「小店设置」里添加',
+  formTimes: (cutoff: string, confirm: string) => `截单 ${cutoff}，买家要在 ${confirm} 前被确认`,
+  tooEarly: '出发太早，留不出确认时间，把出发时间往后挪一点',
+  others: (list: string) => `这天还有：${list}`,
+  lockedOrdered: (n: number) => `已经有 ${n} 单了：日期、时间、取货点不能再改，门槛只能调低。`,
+  lockedClosed: '已经截单了，只能开关每周重复。',
+  save: '保存',
+  saving: '保存中…',
+  close: '关闭',
+
+  // 商品
+  newItem: '新增商品',
+  useCategory: '按分类显示',
+  photoTip: '照片请在小程序「商品管理」里换。新增、改文字要过内容审核，改价格和上下架马上生效。',
+  noItems: '还没有商品。可以点「新增商品」，或者在小程序里从网页导入整份菜单。',
+  uncategorized: '未分类',
+  onSale: '在售',
+  offSale: '已下架',
+  setOn: '上架',
+  setOff: '下架',
+  del: '删除',
+  delConfirm: (name: string) => `删除「${name}」？`,
+  itemName: '名称',
+  itemPrice: '价格（美元）',
+  itemUnit: '单位（选填，如 份、盒）',
+  itemCategory: '分类（选填）',
+  itemDesc: '介绍（选填）',
+  itemSpecs: '成分与规格（选填，如过敏原）',
+  itemAvailable: '在售',
+  needName: '请填写商品名称',
+  needPrice: '请填写正确的价格',
+  itemEditTitle: '修改商品',
+  itemNewTitle: '新增商品'
+}
+
+export type ShopCopy = typeof zh
+
+const en: ShopCopy = {
+  pageTitle: 'Shop Dashboard',
+  pageDesc: 'Manage your group-order shop on a computer: see and confirm orders, open group orders, edit items.',
+  headSub: 'See orders, open group orders and edit items on your computer',
+
+  loginTitle: 'Enter your login code',
+  loginHint: 'Get it in the Minne Helper mini program under My Shop → On Computer. It works for 5 minutes.',
+  loginLabel: 'Login code',
+  loginGo: 'Sign In',
+  loginBusy: 'Signing in…',
+  loginKeep: 'This computer stays signed in for 7 days. Sign out when you’re done on a shared computer.',
+  loading: 'Loading…',
+  logout: 'Sign Out',
+  takedown: 'Your shop has been taken down. If you disagree, contact us through Feedback in the mini program.',
+
+  tabs: { orders: 'Orders', sessions: 'Group Orders', items: 'Items' },
+  retry: 'Retry',
+  errNetwork: 'Network problem. Please try again.',
+  saved: 'Saved',
+  updated: 'Updated',
+
+  allSessions: 'All group orders',
+  sessionOption: (when, n) => `${when} · ${n} order${n === 1 ? '' : 's'}`,
+  orderTabs: { forming: 'Collecting', pending: 'To Confirm', active: 'In Progress', done: 'Done' },
+  statusText: {
+    forming: 'Collecting', confirming: 'To confirm', pending: 'To confirm', accepted: 'Confirmed',
+    delivering: 'Delivering', completed: 'Completed', cancelled: 'Cancelled'
+  },
+  noOrders: 'No orders',
+  copyEmails: n => `Copy ${n} email${n === 1 ? '' : 's'}`,
+  copiedEmails: n => `Copied ${n} email${n === 1 ? '' : 's'}`,
+  copyFailed: 'Couldn’t copy. Select the emails below by hand.',
+  emailsTip: 'Paste them into the BCC field so buyers can’t see each other’s addresses.',
+  exportCsv: 'Export Spreadsheet',
+  orderEmail: 'Email',
+  orderWechat: 'WeChat',
+  orderPhone: 'Phone',
+  orderNote: 'Note',
+  orderUnlisted: 'Address not on our list. Check you can deliver there first.',
+  orderCancelled: r => `Cancelled: ${r}`,
+  copy: 'Copy',
+  copied: 'Copied',
+  confirm: 'Confirm Order',
+  reject: 'Reject',
+  cancel: 'Cancel',
+  startDelivery: 'Start Delivery',
+  delivered: 'Delivered',
+  cancelPrompt: 'Cancel this order? You can add a reason for the buyer (optional).',
+  csvHead: ['Order', 'Date', 'Status', 'Name', 'Email', 'WeChat', 'Phone', 'Pickup', 'Items', 'Note', 'Total', 'Ordered at'],
+
+  newSession: 'New Group Order',
+  noSessions: 'No group orders open. Click “New Group Order” and pick a day.',
+  sessionTitle: (when, depart) => `${when}, leaves ${depart}`,
+  sessionState: { open: 'Collecting', formed: 'Confirmed', failed: 'Not reached', cancelled: 'Cancelled' },
+  countText: (n, min) => (min ? `${n} / ${min} orders` : `${n} order${n === 1 ? '' : 's'}`),
+  forcedTag: ' · running anyway',
+  cutoffLine: at => `Closes ${at}`,
+  confirmLine: (a, b, at) => `${a} to confirm · ${b} confirmed · confirm by ${at}`,
+  repeatTag: w => `Every ${w}`,
+  sessionOrders: 'Orders',
+  edit: 'Edit',
+  settings: 'Settings',
+  force: 'Run Anyway',
+  forceConfirm: 'This group order will go ahead at closing even if it’s short of the minimum. Continue?',
+  forcedDone: 'Set to run anyway',
+  cancelSession: 'Cancel This Group Order',
+  cancelSessionConfirm: n => (n ? `${n} order${n === 1 ? '' : 's'} will be cancelled too and buyers will be notified. Cancel this group order?` : 'Cancel this group order?'),
+  cancelledDone: 'Cancelled',
+
+  formNew: 'New Group Order',
+  formEdit: 'Edit Group Order',
+  formDate: 'Delivery date',
+  formDepart: 'Leaves at',
+  formCutoff: 'Orders close at (the day before)',
+  formMin: 'Minimum orders',
+  minOption: n => (n ? `${n} orders` : 'No minimum'),
+  formRepeat: 'Open again every week on this day',
+  formPoints: 'Pickup points for this run',
+  noPoints: 'No pickup points yet. Add them in the mini program under Shop Settings.',
+  formTimes: (cutoff, confirm) => `Orders close ${cutoff}; confirm buyers by ${confirm}`,
+  tooEarly: 'Leaving too early to leave time for confirming. Move the departure later.',
+  others: l => `Also that day: ${l}`,
+  lockedOrdered: n => `${n} order${n === 1 ? '' : 's'} placed: date, time and pickup points are locked, and the minimum can only go down.`,
+  lockedClosed: 'Orders are closed. Only weekly repeat can be changed.',
+  save: 'Save',
+  saving: 'Saving…',
+  close: 'Close',
+
+  newItem: 'Add Item',
+  useCategory: 'Group by category',
+  photoTip: 'Change photos in the mini program under Manage Products. New items and text edits go through content review; price changes and sold-out switches apply right away.',
+  noItems: 'No items yet. Click “Add Item”, or import a whole menu from the web in the mini program.',
+  uncategorized: 'Uncategorized',
+  onSale: 'On sale',
+  offSale: 'Sold out',
+  setOn: 'Put on Sale',
+  setOff: 'Mark Sold Out',
+  del: 'Delete',
+  delConfirm: name => `Delete “${name}”?`,
+  itemName: 'Name',
+  itemPrice: 'Price (USD)',
+  itemUnit: 'Unit (optional, e.g. box)',
+  itemCategory: 'Category (optional)',
+  itemDesc: 'Description (optional)',
+  itemSpecs: 'Ingredients & specs (optional, e.g. allergens)',
+  itemAvailable: 'On sale',
+  needName: 'Enter a name',
+  needPrice: 'Enter a valid price',
+  itemEditTitle: 'Edit Item',
+  itemNewTitle: 'Add Item'
+}
+
+export const COPY: Record<Lang, ShopCopy> = { zh, en }
+
+const ERRORS_EN: Record<string, string> = {
+  '登录码是 8 位': 'The login code is 8 characters.',
+  '登录码不对或已过期': 'This login code is wrong or expired. Get a new one in the mini program.',
+  '登录已失效，请重新登录': 'You’ve been signed out. Please sign in again.',
+  '请先登录': 'Please sign in.',
+  '你还没有店铺': 'You don’t have a shop yet.',
+  '店长后台还没配置好': 'The shop dashboard isn’t set up yet.',
+  '连不上服务器，请稍后重试': 'Can’t reach the server. Please try again later.',
+  '服务出错了': 'Something went wrong on our side.',
+  '操作失败，请重试': 'Something went wrong. Please try again.',
+  '网页上不能做这个操作': 'This can’t be done on the web.',
+  '没有权限': 'Not allowed.',
+  '参数不完整': 'Something is missing.',
+  '这个订单已经不能改成该状态了': 'This order can’t be changed to that status anymore.',
+  '订单状态变了，刷新看看': 'This order just changed. Refresh to see it.',
+  '时间不完整': 'Please fill in the times.',
+  '截单时间已经过了，换一天': 'Orders for that day would already be closed. Pick a later day.',
+  '出发太早，留不出确认时间': 'Leaving too early to leave time for confirming.',
+  '至少选一个取货点': 'Pick at least one pickup point.',
+  '店铺已被下架': 'Your shop has been taken down.',
+  '线上服务的店开不了团': 'Online-only shops can’t open group orders.',
+  '先上架商品再开团': 'Add items before opening a group order.',
+  '这天已经开过团了': 'You already have a group order that day.',
+  '已经有人下单，门槛只能调低': 'People have ordered, so the minimum can only go down.',
+  '这一场已经结束了': 'This group order has ended.',
+  '这一场已经截单了': 'Orders for this one are already closed.',
+  '这一场已经出发了': 'This group order has already left.',
+  '请填写商品名称': 'Enter a name.',
+  '请填写正确的价格': 'Enter a valid price.',
+  '网页上改商品文字还没开通，请先在小程序里改': 'Editing item text on the web isn’t switched on yet. Please edit it in the mini program for now.',
+  '内容校验服务暂时不可用，请稍后重试': 'Content review is unavailable right now. Please try again later.'
+}
+
+const LABEL_EN: Record<string, string> = {
+  色情内容: 'sexual content', 辱骂内容: 'abusive language', 广告: 'advertising', 违法内容: 'illegal content',
+  时政内容: 'political content', 暴恐内容: 'violent content', 低俗内容: 'vulgar content', 违规内容: 'content that breaks the rules'
+}
+
+export function localizeError(message: string, lang: Lang): string {
+  if (lang === 'zh' || !message) return message
+  const hit = ERRORS_EN[message]
+  if (hit) return hit
+  const m = message.match(/^文字可能包含(.+)，请修改后再保存$/)
+  if (m) return `The text may contain ${LABEL_EN[m[1]] || 'content that breaks the rules'}. Please edit it and save again.`
+  const max = message.match(/^最多同时开 (\d+) 场$/)
+  if (max) return `You can have at most ${max[1]} group orders open at once.`
+  return message
+}
