@@ -1,13 +1,14 @@
 import type { Post, PostType } from './types'
+import type { Lang } from './i18n'
 
 // 四个帖子板块的差异全在这张表里，和小程序 utils/kinds.js 是同一个思路：
-// 列表页、详情页都是通用的，加板块或改文案只动这里。
+// 列表页、详情页都是通用的，加板块或改文案只动这里。中英文案都在这里。
 
 export type Tab = { key: string; label: string; empty: string; closed: string }
 
 export type Module = {
   type: PostType
-  path: string
+  path: string                // 不带语言前缀，链接时用 lp(lang, path)
   icon: string
   tint: 'gold' | 'maroon' | 'cream' | 'plain'
   title: string
@@ -18,7 +19,7 @@ export type Module = {
   cta: string                 // 详情页底部按钮
 }
 
-export const MODULES: Record<PostType, Module> = {
+const ZH: Record<PostType, Module> = {
   item: {
     type: 'item', path: '/market', icon: 'market', tint: 'gold',
     title: '二手市场', sub: '低价淘，轻松出', unit: '件在售', searchable: true, cta: '去小程序联系卖家',
@@ -50,7 +51,47 @@ export const MODULES: Record<PostType, Module> = {
   }
 }
 
-export const MODULE_LIST = Object.values(MODULES)
+const EN: Record<PostType, Module> = {
+  item: {
+    type: 'item', path: '/market', icon: 'market', tint: 'gold',
+    title: 'Marketplace', sub: 'Buy cheap, sell easy', unit: 'for sale', searchable: true, cta: 'Contact seller in the mini program',
+    tabs: [
+      { key: 'sell', label: 'For sale', empty: 'No items yet', closed: 'Sold' },
+      { key: 'want', label: 'Wanted', empty: 'No wanted posts yet', closed: 'Closed' }
+    ]
+  },
+  sublet: {
+    type: 'sublet', path: '/sublet', icon: 'sublet', tint: 'plain',
+    title: 'Sublets', sub: 'Rooms, sublets, roommates', unit: 'listings', searchable: false, cta: 'Contact owner in the mini program',
+    tabs: [
+      { key: 'offer', label: 'Offering', empty: 'No listings yet', closed: 'Rented' },
+      { key: 'seek', label: 'Looking', empty: 'No one is looking yet', closed: 'Closed' }
+    ]
+  },
+  task: {
+    type: 'task', path: '/tasks', icon: 'task', tint: 'maroon',
+    title: 'Errands', sub: 'Pickups, shopping, favors', unit: 'errands', searchable: false, cta: 'Take it in the mini program',
+    tabs: null
+  },
+  group: {
+    type: 'group', path: '/groups', icon: 'group', tint: 'plain',
+    title: 'Groups', sub: 'Find buddies, start a band', unit: 'groups', searchable: false, cta: 'Join in the mini program',
+    tabs: [
+      { key: 'buddy', label: 'Buddies', empty: 'No buddy posts yet', closed: 'Full' },
+      { key: 'club', label: 'Clubs', empty: 'No clubs yet', closed: 'Not recruiting' }
+    ]
+  }
+}
+
+export function modules(lang: Lang = 'zh'): Record<PostType, Module> {
+  return lang === 'en' ? EN : ZH
+}
+export function moduleList(lang: Lang = 'zh'): Module[] {
+  return Object.values(modules(lang))
+}
+
+export const MODULES = ZH
+export const MODULE_LIST = Object.values(ZH)
 
 // 和小程序 kinds.js 一致：早期帖子没有 kind，都是「供」那一面
 export function tabOf(mod: Module, kind?: string): Tab | null {
@@ -60,11 +101,11 @@ export function tabOf(mod: Module, kind?: string): Tab | null {
 
 const CLOSED = ['sold', 'rented', 'done', 'expired']
 
-export function closedLabel(mod: Module, post: Post): string {
+export function closedLabel(mod: Module, post: Post, lang: Lang = 'zh'): string {
   if (!post.status || CLOSED.indexOf(post.status) === -1) return ''
-  if (post.status === 'expired') return '已过期'
+  if (post.status === 'expired') return lang === 'en' ? 'Expired' : '已过期'
   const tab = tabOf(mod, post.kind)
-  return tab ? tab.closed : '已完成'
+  return tab ? tab.closed : lang === 'en' ? 'Done' : '已完成'
 }
 
 export function rentText(p: Post): string {
@@ -74,77 +115,87 @@ export function rentText(p: Post): string {
 }
 
 // 卡片右上角的那个数
-export function headline(type: PostType, p: Post): string {
+export function headline(type: PostType, p: Post, lang: Lang = 'zh'): string {
+  const en = lang === 'en'
   if (type === 'item') return p.price != null ? `$${p.price}` : ''
-  if (type === 'sublet') return `${p.kind === 'seek' ? '预算 ' : ''}$${rentText(p)}/月`
+  if (type === 'sublet') {
+    return en ? `${p.kind === 'seek' ? 'Budget ' : ''}$${rentText(p)}/mo` : `${p.kind === 'seek' ? '预算 ' : ''}$${rentText(p)}/月`
+  }
   if (type === 'task') return p.reward != null ? `$${p.reward}` : ''
   return ''
 }
 
 // 卡片底部的小字：只放能区分条目的信息
-export function chips(type: PostType, p: Post): string[] {
+export function chips(type: PostType, p: Post, lang: Lang = 'zh'): string[] {
+  const en = lang === 'en'
   const out: string[] = []
   if (type === 'item' && p.pickup_spot) out.push(p.pickup_spot)
   if (type === 'sublet') {
     if (p.room_type) out.push(p.room_type)
     if (p.address) out.push(p.address)
-    if (p.start_date) out.push(`${shortDate(p.start_date)} 起`)
+    if (p.start_date) out.push(en ? `From ${shortDate(p.start_date, lang)}` : `${shortDate(p.start_date)} 起`)
   }
-  if (type === 'task' && p.deadline) out.push(`${shortDate(p.deadline)} 截止`)
+  if (type === 'task' && p.deadline) out.push(en ? `Due ${shortDate(p.deadline, lang)}` : `${shortDate(p.deadline)} 截止`)
   if (type === 'group') {
-    if (p.event_date) out.push(shortDate(p.event_date))
+    if (p.event_date) out.push(shortDate(p.event_date, lang))
     if (p.location) out.push(p.location)
   }
   return out
 }
 
 // 详情页「左标签右值」的几行
-export function rows(type: PostType, p: Post): [string, string][] {
+export function rows(type: PostType, p: Post, lang: Lang = 'zh'): [string, string][] {
+  const en = lang === 'en'
+  const L = (zh: string, e: string) => (en ? e : zh)
   const r: [string, string | undefined | false][] = []
   if (type === 'item') {
-    r.push([p.kind === 'want' ? '预算' : '价格', p.price != null && `$${p.price}`])
-    r.push(['取货地点', p.pickup_spot])
+    r.push([p.kind === 'want' ? L('预算', 'Budget') : L('价格', 'Price'), p.price != null && `$${p.price}`])
+    r.push([L('取货地点', 'Pickup'), p.pickup_spot])
   }
   if (type === 'sublet') {
-    r.push([p.kind === 'seek' ? '预算' : '月租', `$${rentText(p)}/月`])
-    r.push(['户型', p.room_type])
-    r.push([p.kind === 'seek' ? '想找的区域' : '地址', p.address])
-    r.push(['租期', p.start_date && `${longDate(p.start_date)}${p.end_date ? ' 至 ' + longDate(p.end_date) : ' 起'}`])
-    r.push(['押金', p.deposit != null && `$${p.deposit}`])
-    r.push(['水电网', p.utilities != null && `约 $${p.utilities}/月`])
-    r.push(['家具', p.furnished === true ? '带家具' : p.furnished === false && p.kind !== 'seek' ? '不带家具' : false])
-    r.push(['室友', p.roommate_info])
+    r.push([p.kind === 'seek' ? L('预算', 'Budget') : L('月租', 'Rent'), `$${rentText(p)}${L('/月', '/mo')}`])
+    r.push([L('户型', 'Layout'), p.room_type])
+    r.push([p.kind === 'seek' ? L('想找的区域', 'Preferred area') : L('地址', 'Address'), p.address])
+    r.push([L('租期', 'Lease'), p.start_date && `${longDate(p.start_date, lang)}${p.end_date ? L(' 至 ', ' to ') + longDate(p.end_date, lang) : L(' 起', ' onward')}`])
+    r.push([L('押金', 'Deposit'), p.deposit != null && `$${p.deposit}`])
+    r.push([L('水电网', 'Utilities'), p.utilities != null && L(`约 $${p.utilities}/月`, `~$${p.utilities}/mo`)])
+    r.push([L('家具', 'Furniture'), p.furnished === true ? L('带家具', 'Furnished') : p.furnished === false && p.kind !== 'seek' ? L('不带家具', 'Unfurnished') : false])
+    r.push([L('室友', 'Roommates'), p.roommate_info])
   }
   if (type === 'task') {
-    r.push(['报酬', p.reward != null && `$${p.reward}`])
-    r.push(['截止', p.deadline && longDate(p.deadline)])
-    r.push(['地点', p.location])
+    r.push([L('报酬', 'Reward'), p.reward != null && `$${p.reward}`])
+    r.push([L('截止', 'Due'), p.deadline && longDate(p.deadline, lang)])
+    r.push([L('地点', 'Location'), p.location])
   }
   if (type === 'group') {
-    r.push(['日期', p.event_date && longDate(p.event_date)])
-    r.push(['地点', p.location])
+    r.push([L('日期', 'Date'), p.event_date && longDate(p.event_date, lang)])
+    r.push([L('地点', 'Location'), p.location])
   }
   return r.filter((x): x is [string, string] => !!x[1])
 }
 
 const WEEK = ['日', '一', '二', '三', '四', '五', '六']
+const WEEK_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const MONTH_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-// 'YYYY-MM-DD' → '10月18日'。按字符串拆，不经过 Date，免得时区把日期挪一天
-export function shortDate(s: string): string {
+// 'YYYY-MM-DD' → '10月18日' / 'Oct 18'。按字符串拆，不经过 Date，免得时区把日期挪一天
+export function shortDate(s: string, lang: Lang = 'zh'): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s)
   if (!m) return s
+  if (lang === 'en') return `${MONTH_EN[Number(m[2]) - 1]} ${Number(m[3])}`
   return `${Number(m[2])}月${Number(m[3])}日`
 }
 
-export function longDate(s: string): string {
+export function longDate(s: string, lang: Lang = 'zh'): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s)
   if (!m) return s
   const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])))
+  if (lang === 'en') return `${WEEK_EN[d.getUTCDay()]}, ${shortDate(s, lang)}`
   return `${shortDate(s)} 周${WEEK[d.getUTCDay()]}`
 }
 
 // 拼团的截单时刻 'YYYY-MM-DD HH:MM'
-export function cutoffText(s: string): string {
+export function cutoffText(s: string, lang: Lang = 'zh'): string {
   const [date, time] = s.split(' ')
-  return `${longDate(date)} ${time || ''}`.trim()
+  return `${longDate(date, lang)} ${time || ''}`.trim()
 }

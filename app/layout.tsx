@@ -1,6 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-import SiteFooter from '@/components/SiteFooter'
-import SiteHeader from '@/components/SiteHeader'
 import './globals.css'
 
 // 分享卡片里的绝对链接。绑了自己的域名就配 SITE_URL；没配时用 Vercel 自动给的正式域名
@@ -27,9 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet" />
       </head>
       <body>
-        <SiteHeader />
         {children}
-        <SiteFooter />
       </body>
     </html>
   )

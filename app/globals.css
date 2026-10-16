@@ -604,4 +604,6 @@ a.session-card:hover { box-shadow: 0 6px 20px rgba(122, 0, 25, .1); }
   background: var(--card); border: 1.5px solid var(--line); border-radius: 999px;
 }
 .page-lang:hover { color: var(--maroon); border-color: var(--maroon); }
+.site-header-inner .page-lang { align-self: center; margin-left: auto; }
+.site-header-inner .page-lang + .btn { margin-left: 0; }
 .imp-done-back { margin-top: 16px; }

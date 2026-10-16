@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
 // 截图也是从那边拷来的（public/merchants/zh|en）。改说法时两边一起改。
 // 对外一律说「入驻商家」，不说「合作商家」——《商家责任告知书》写明商家不是平台的合作方。
 
-const EMAIL = 'yang9926@umn.edu'
+const WECHAT = 'uauauauauauaua_'
 
 // 推荐取货点。和小程序开店向导预填的两个点一致（campus-helper miniprogram/utils/shopForm.js），改名字两边一起改。
 // 地图用 Google 地图按地址嵌入，不用 API key。照片放 public/merchants/points/<photo>，文件在就显示，没有就只显示地图
@@ -51,7 +51,7 @@ const ZH: Copy = {
   kicker: '商家入驻 · 一起拼团',
   title: <>凑够单，<em>再出发</em></>,
   sub: '想把拿手菜、亚超好货、家庭烘焙卖给更多同学和邻居，又怕备了货没人买、跑一趟只送两三单？在明尼助手开一场团，人够了再出发。',
-  apply: '申请开店码',
+  apply: `加微信 ${WECHAT} 申请开店码`,
   applySubject: '开店',
   howLink: '看看怎么开团',
   badges: ['不抽成', '不经手资金', '满单才出发'],
@@ -85,10 +85,10 @@ const ZH: Copy = {
     { q: '菜单很长，要一样样录吗？', a: '不用。在「商品管理」点「从网页导入菜单」拿导入码，用浏览器打开 minnepal.com/import，贴菜单链接、文字或照片，整理好回小程序核对，一次上架。' },
     { q: '没凑够单怎么办？', a: '截单时没到门槛，这场团和订单自动取消，系统会通知买家。不想等，也可以点「照常送」。' },
     { q: '卖食品有什么要求？', a: '如果你销售食品，需要自己符合当地的相关规定。开店前，小程序里会请你阅读并确认《商家责任告知书》。' },
-    { q: '怎么开店？', a: `发邮件到 ${EMAIL}，备注「开店」，我们把开店码发给你。开店码 7 天内有效，一码一店。` }
+    { q: '怎么开店？', a: `添加微信 ${WECHAT}，备注「开店」，我们把开店码发给你。开店码 7 天内有效，一码一店。` }
   ],
   endTitle: '下一场团，从你开始',
-  endSub: `发邮件到 ${EMAIL}，备注「开店」`,
+  endSub: `添加微信 ${WECHAT}，备注「开店」`,
   scan: '买家在这里找到你：微信扫码或搜一搜「明尼助手」'
 }
 
@@ -99,7 +99,7 @@ const EN: Copy = {
   kicker: 'For sellers · Group-buy',
   title: <>Fill the order first, <em>then go</em></>,
   sub: 'Want to sell your signature dishes, Asian groceries or home baking to more students and neighbours, but worried you\'ll stock up and nobody buys, or drive over for two or three orders? Open a session on 明尼助手 and only head out once enough people have signed up.',
-  apply: 'Get a shop code',
+  apply: `Add WeChat ${WECHAT} for a shop code`,
   applySubject: 'Open a shop',
   howLink: 'See how it works',
   badges: ['No commission', 'We never touch your money', 'Go only when it fills'],
@@ -134,16 +134,15 @@ const EN: Copy = {
     { q: 'What if it doesn\'t fill?', a: 'If the minimum isn\'t met by the cutoff, the session and its orders are cancelled and buyers are notified. Don\'t want to wait? Tap Go Anyway.' },
     { q: 'Is the app in English?', a: 'Yes. Go to Me → 语言 / Language and choose English.' },
     { q: 'Selling food?', a: 'If you sell food, you are responsible for following local rules. Before opening your shop, the mini program asks you to read and confirm the seller responsibility notice.' },
-    { q: 'How do I start?', a: `Email ${EMAIL} with "Open a shop" and we'll send you a shop code. Each code opens one shop and is valid for 7 days.` }
+    { q: 'How do I start?', a: `Add WeChat ${WECHAT} with the note "Open a shop" and we'll send you a shop code. Each code opens one shop and is valid for 7 days.` }
   ],
   endTitle: 'Your next session starts here',
-  endSub: `Email ${EMAIL} with "Open a shop"`,
+  endSub: `Add WeChat ${WECHAT} with the note "Open a shop"`,
   scan: 'Buyers find you here: scan in WeChat or search 明尼助手'
 }
 
 export default function MerchantPage({ lang }: { lang: 'zh' | 'en' }) {
   const c = lang === 'en' ? EN : ZH
-  const mail = `mailto:${EMAIL}?subject=${encodeURIComponent(c.applySubject)}`
   const img = (name: string) => `/merchants/${c.lang}/${name}`
 
   return (
@@ -158,7 +157,7 @@ export default function MerchantPage({ lang }: { lang: 'zh' | 'en' }) {
             <h1 className="m-title">{c.title}</h1>
             <p className="m-sub">{c.sub}</p>
             <div className="hero-actions">
-              <a href={mail} className="btn btn-gold btn-lg">{c.apply}</a>
+              <span className="btn btn-gold btn-lg" style={{ userSelect: 'all' }}>{c.apply}</span>
               <a href="#how" className="btn btn-ghost-light btn-lg">{c.howLink} ↓</a>
             </div>
             <ul className="badges">
@@ -243,7 +242,7 @@ export default function MerchantPage({ lang }: { lang: 'zh' | 'en' }) {
           <div>
             <h2 className="m-end-title">{c.endTitle}</h2>
             <p className="m-end-sub">{c.endSub}</p>
-            <a href={mail} className="btn btn-gold btn-lg">{c.apply}</a>
+            <span className="btn btn-gold btn-lg" style={{ userSelect: 'all' }}>{c.apply}</span>
           </div>
           <div className="m-end-code">
             <img src="/sou-combo.png" alt="明尼助手" />

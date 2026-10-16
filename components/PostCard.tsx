@@ -1,14 +1,15 @@
 import Link from 'next/link'
-import { MODULES, chips, headline } from '@/lib/modules'
+import { lp, type Lang } from '@/lib/i18n'
+import { modules, chips, headline } from '@/lib/modules'
 import type { Post, PostType } from '@/lib/types'
 
 // 有图的走图片卡（二手、转租、群组的「供」那一面），没图的走文字卡。
 // 和小程序一样按「这一条有没有图」决定，不按板块写死
-export default function PostCard({ type, post }: { type: PostType; post: Post }) {
-  const mod = MODULES[type]
-  const href = `${mod.path}/${post._id}`
-  const head = headline(type, post)
-  const tags = chips(type, post)
+export default function PostCard({ type, post, lang = 'zh' }: { type: PostType; post: Post; lang?: Lang }) {
+  const mod = modules(lang)[type]
+  const href = lp(lang, `${mod.path}/${post._id}`)
+  const head = headline(type, post, lang)
+  const tags = chips(type, post, lang)
 
   if (post.thumb) {
     return (
